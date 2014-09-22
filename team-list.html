@@ -61,7 +61,7 @@
 	<header>
 		<div>
 			<ul class="breadcrumb">
-				<li class="projectVersion version-date">Version: 0.0.3</li>
+				<li class="projectVersion version-date">Version: 0.0.4</li>
 				<li class="divider">|</li>
 				<li class="publishDate version-date">Last Published: 2014-09-22</li>
 			</ul>
@@ -106,7 +106,33 @@
  <div class="section"> 
   <h3 id="Contributors">Contributors</h3> 
   <a name="Contributors"></a> 
-  <p>There are no contributors listed for this project. Please check back again later.</p> 
+  <p>The following additional people have contributed to this project through the way of suggestions, patches or documentation.</p> 
+  <table border="0" class="bodyTable table table-striped table-hover"> 
+   <thead> 
+    <tr class="a"> 
+     <th>Image</th> 
+     <th>Name</th> 
+     <th>Email</th> 
+     <th>Organization</th> 
+     <th>Organization URL</th> 
+     <th>Roles</th> 
+     <th>Time Zone</th> 
+     <th>Actual Time (GMT)</th> 
+    </tr> 
+   </thead> 
+   <tbody> 
+    <tr class="b"> 
+     <td><img src="http://www.gravatar.com/avatar/23d7cae66c0fb500f2124c03127e21f5?d=mm&amp;s=60" alt="" /></td> 
+     <td>Neil Ellis</td> 
+     <td><a class="externalLink" href="mailto:neil@cazcade.com">neil@cazcade.com</a></td> 
+     <td>Cazcade Limited</td> 
+     <td><a class="externalLink" href="http://cazcade.com">http://cazcade.com</a></td> 
+     <td>founder, developer</td> 
+     <td>GMT</td> 
+     <td><span id="contributor-0">GMT</span></td> 
+    </tr> 
+   </tbody> 
+  </table> 
   <script type="text/javascript">
 function offsetDate(id, offset) {
     var now = new Date();
@@ -119,6 +145,7 @@ function offsetDate(id, offset) {
 }
 
 function init(){
+    offsetDate('contributor-0', '0');
 }
 
 window.onLoad = init();
