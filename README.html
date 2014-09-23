@@ -150,6 +150,9 @@
             );
     assertEquals(age /11, (int)profile.$(&quot;$['age']/11&quot;).$int());
     assertEquals(&quot;male&quot;, profile.$(&quot;$.gender&quot;).$());
+    assertEquals(10, profile.$(&quot;5*2&quot;).$());
+    assertEquals($(&quot;{\&quot;name\&quot;:\&quot;Dave\&quot;}&quot;).$(&quot;name&quot;).$$(),&quot;Dave&quot;);
+    assertEquals($().$(&quot;({name:'Dave'})&quot;).$(&quot;name&quot;).$$(), &quot;Dave&quot;);
 </pre> 
 </div> 
 <p>Or <a class="externalLink" href="https://bintray.com/cazcade/maven/dollar_vertx/_latestVersion"> <img src="https://api.bintray.com/packages/cazcade/maven/dollar_vertx/images/download.png" alt="Download" /> </a></p> 
