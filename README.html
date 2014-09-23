@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>Project Mailing Lists | dollar-vertx</title>
+		<title>dollar_vertx | dollar-vertx</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -34,7 +34,7 @@
 
 	</head>
 
-	<body class="page-mail-lists project-dollar-vertx" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-readme project-dollar-vertx" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
@@ -47,8 +47,8 @@
 					<a class="brand" href="http://github.com/cazcade/dollar_vertx">Cazcade: Dollar Vert.x</a>
 					<div class="nav-collapse collapse" id="top-nav-collapse">
 						<ul class="nav pull-right">
-							<li ><a href="README.html" title="Intro">Intro</a></li>
-							<li class="dropdown active">
+							<li class="active"><a href="" title="Intro">Intro</a></li>
+							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Project Documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-submenu ">
@@ -59,7 +59,7 @@
 											<li ><a href="distribution-management.html" title="Distribution Management">Distribution Management</a></li>
 											<li ><a href="dependency-info.html" title="Dependency Information">Dependency Information</a></li>
 											<li ><a href="source-repository.html" title="Source Repository">Source Repository</a></li>
-											<li class="active"><a href="" title="Mailing Lists">Mailing Lists</a></li>
+											<li ><a href="mail-lists.html" title="Mailing Lists">Mailing Lists</a></li>
 											<li ><a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a></li>
 											<li ><a href="integration.html" title="Continuous Integration">Continuous Integration</a></li>
 											<li ><a href="plugins.html" title="Project Plugins">Project Plugins</a></li>
@@ -107,7 +107,11 @@
 					</a>
 					<div class="nav-collapse collapse" id="toc-nav-collapse">
 						<ul id="toc" class="nav">
-						<li class="toplevel"><a href="#Project_Mailing_Lists" title="Project Mailing Lists">Project Mailing Lists</a></li>
+						<li class="toplevel"><a href="#dollar_vertx" title="dollar_vertx">dollar_vertx</a></li>
+						<li class="divider-vertical"></li>
+						<li class="toplevel"><a href="#example" title="Example">Example</a></li>
+						<li class="divider-vertical"></li>
+						<li class="toplevel"><a href="#" title=""></a></li>
 						</ul>
 					</div>
 				</div>
@@ -119,13 +123,37 @@
 	<div class="row">
 		<div class="span12">
 			<div class="body-content">
-<div class="section"> 
- <div class="page-header">
-  <h2 id="Project_Mailing_Lists">Project Mailing Lists</h2>
- </div> 
- <a name="Project_Mailing_Lists"></a> 
- <p>There are no mailing lists currently associated with this project.</p> 
-</div>
+<div class="page-header">
+ <h1 id="dollar_vertx">dollar_vertx</h1>
+</div> 
+<p>Making JSON easier for Vert.x</p> 
+<p>Install using Maven</p> 
+<div class="source"> 
+ <pre>    &lt;dependency&gt;
+        &lt;groupId&gt;com.cazcade&lt;/groupId&gt;
+        &lt;artifactId&gt;dollar-vertx&lt;/artifactId&gt;
+        &lt;version&gt;0.0.9&lt;/version&gt;
+    &lt;/dependency&gt;
+</pre> 
+</div> 
+<h1 id="example">Example</h1> 
+<div class="source"> 
+ <pre>    int age = new Date().getYear() + 1900 - 1970;
+    $ profile = $(&quot;name&quot;, &quot;Neil&quot;)
+            .$(&quot;age&quot;, age)
+            .$(&quot;gender&quot;, &quot;male&quot;)
+            .$(&quot;projects&quot;, $array(&quot;snapito&quot;, &quot;dollar_vertx&quot;))
+            .$(&quot;location&quot;,
+                    $(&quot;city&quot;, &quot;brighton&quot;)
+                            .$(&quot;postcode&quot;, &quot;bn1 6jj&quot;)
+                            .$(&quot;number&quot;, 343)
+            );
+    assertEquals(age /11, (int)profile.$(&quot;$['age']/11&quot;).$int());
+    assertEquals(&quot;male&quot;, profile.$(&quot;$.gender&quot;).$());
+</pre> 
+</div> 
+<p>Or <a class="externalLink" href="https://bintray.com/cazcade/maven/dollar_vertx/_latestVersion"> <img src="https://api.bintray.com/packages/cazcade/maven/dollar_vertx/images/download.png" alt="Download" /> </a></p> 
+<h1 id=""><a class="externalLink" href="https://circleci.com/gh/cazcade/dollar_vertx/tree/master"><img src="https://circleci.com/gh/cazcade/dollar_vertx/tree/master.png?style=badge" alt="Circle CI" /></a></h1>
 			</div>
 		</div>
 	</div>
