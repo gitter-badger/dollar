@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>dollar_vertx | dollar-vertx</title>
+		<title>dollar | dollar-vertx</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -91,7 +91,7 @@
 	<header>
 		<div>
 			<ul class="breadcrumb">
-				<li class="projectVersion version-date">Version: 0.0.12</li>
+				<li class="projectVersion version-date">Version: 0.0.13</li>
 				<li class="divider">|</li>
 				<li class="publishDate version-date">Last Published: 2014-10-03</li>
 			</ul>
@@ -107,9 +107,19 @@
 					</a>
 					<div class="nav-collapse collapse" id="toc-nav-collapse">
 						<ul id="toc" class="nav">
-						<li class="toplevel"><a href="#dollar_vertx" title="dollar_vertx">dollar_vertx</a></li>
+						<li class="toplevel"><a href="#dollar" title="dollar">dollar</a></li>
 						<li class="divider-vertical"></li>
-						<li class="toplevel"><a href="#example" title="Example">Example</a></li>
+						<li class="dropdown">
+							<a href="#examples" title="Examples" class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#">Examples <b class="caret"></b></a>
+							<ul class="dropdown-menu" role="menu">
+								<!-- Repeat the item, otherwise it is not clickable as the dropdown root -->
+								<li><a href="#examples" title="Examples">Examples</a></li>
+								<li class="divider"></li>
+								<li><a href="#Basic" title="Basic">Basic</a></li>
+								<li><a href="#Webserver" title="Webserver">Webserver</a></li>
+
+							</ul>
+						</li>
 						<li class="divider-vertical"></li>
 						<li class="toplevel"><a href="#characteristics" title="Characteristics">Characteristics</a></li>
 						<li class="divider-vertical"></li>
@@ -128,21 +138,23 @@
 		<div class="span12">
 			<div class="body-content">
 <div class="page-header">
- <h1 id="dollar_vertx">dollar_vertx</h1>
+ <h1 id="dollar">dollar</h1>
 </div> 
-<p>Making JSON easier for Vert.x</p> 
+<p>Making Java dynamic and easy to use.</p> 
 <p>Install using Maven</p> 
 <div class="source"> 
  <pre>    &lt;dependency&gt;
         &lt;groupId&gt;com.cazcade&lt;/groupId&gt;
         &lt;artifactId&gt;dollar-vertx&lt;/artifactId&gt;
-        &lt;version&gt;0.0.12&lt;/version&gt;
+        &lt;version&gt;0.0.13&lt;/version&gt;
     &lt;/dependency&gt;
 </pre> 
 </div> 
-<h1 id="example">Example</h1> 
-<div class="source"> 
- <pre>    int age = new Date().getYear() + 1900 - 1970;
+<h1 id="examples">Examples</h1> 
+<div class="section"> 
+ <h2 id="Basic">Basic</h2> 
+ <div class="source"> 
+  <pre>    int age = new Date().getYear() + 1900 - 1970;
     $ profile = $(&quot;name&quot;, &quot;Neil&quot;)
             .$(&quot;age&quot;, age)
             .$(&quot;gender&quot;, &quot;male&quot;)
@@ -159,18 +171,35 @@
     assertEquals($(&quot;{\&quot;name\&quot;:\&quot;Dave\&quot;}&quot;).$(&quot;name&quot;).$$(),&quot;Dave&quot;);
     assertEquals($().$(&quot;({name:'Dave'})&quot;).$(&quot;name&quot;).$$(), &quot;Dave&quot;);
 </pre> 
+ </div> 
 </div> 
-<h1 id="characteristics">Characteristics</h1> 
-<p>Synchronous Metered Nullsafe</p> 
-<h1 id="the_rules">The Rules</h1> 
-<ol style="list-style-type: decimal"> 
- <li>Do not create your own Threads.</li> 
- <li>Do not create your own Threads.</li> 
- <li>Always run from a <i>static</i> context (e.g. a public static void main method)</li> 
- <li>All $ objects are immutable, so use the returned value after ‘mutation’ actions.</li> 
-</ol> 
-<p>Or <a class="externalLink" href="https://bintray.com/cazcade/maven/dollar_vertx/_latestVersion"> <img src="https://api.bintray.com/packages/cazcade/maven/dollar_vertx/images/download.png" alt="Download" /> </a></p> 
-<h1 id=""><a class="externalLink" href="https://circleci.com/gh/cazcade/dollar_vertx/tree/master"><img src="https://circleci.com/gh/cazcade/dollar_vertx/tree/master.png?style=badge" alt="Circle CI" /></a></h1>
+<div class="section"> 
+ <h2 id="Webserver">Webserver</h2> 
+ <p>Create a webserver at <a class="externalLink" href="http://localhost:4567/headers">http://localhost:4567/headers</a> and return the request headers as a JSON string.</p> 
+ <div class="source"> 
+  <pre>    GET(&quot;/headers&quot;, (context) -&gt; context.headers());
+</pre> 
+ </div> 
+ <h1 id="characteristics">Characteristics</h1> 
+ <p>Dollar is designed for production, it is designed for code you are going to have to fix. Every library and language has it’s sweet spot. Dollar’s sweetspot is working with schema-less data in a production environment. It is not designed for high performance systems (there is a 99.9% chance your project isn’t a high performance system) but there is no reason to expect it to be slow either. Where possible the code has been written with JVM optimization in mind.</p> 
+ <p>With this in mind the following are Dollar’s characteristics:</p> 
+ <ul> 
+  <li>Typeless - if you <i>need</i> strongly typed code stop reading now. If you’re writing internet centric modest sized software this is unlikely to be the case.</li> 
+  <li>Synchronous - asynchronous flows are hard to follow and even harder to debug in production. We do not expose asynchronous behaviour to the programmer.</li> 
+  <li>Metered - key execution’s are metered using Coda Hale’s metrics library, this makes production monitoring and debugging easier.</li> 
+  <li>Nullsafe - Special null type reduces null pointer exceptions, which can be replaced by an isNull() check.</li> 
+  <li>Threadsafe - No shared state, always copy on write. No shared state means avoidance of synchronization primitives, reduces memory leaks and generally leaves you feeling happier. It comes at a cost (object creation) but that cost is an acceptable cost as far as Dollar is concerned.</li> 
+ </ul> 
+ <h1 id="the_rules">The Rules</h1> 
+ <ol style="list-style-type: decimal"> 
+  <li>Do not create your own Threads.</li> 
+  <li>Do not create your own Threads.</li> 
+  <li>Always run from a <i>static</i> context (e.g. a public static void main method)</li> 
+  <li>All $ objects are immutable, so use the returned value after ‘mutation’ actions.</li> 
+ </ol> 
+ <p>Or <a class="externalLink" href="https://bintray.com/cazcade/maven/dollar/_latestVersion"> <img src="https://api.bintray.com/packages/cazcade/maven/dollar/images/download.png" alt="Download" /> </a></p> 
+ <h1 id=""><a class="externalLink" href="https://circleci.com/gh/cazcade/dollar/tree/master"><img src="https://circleci.com/gh/cazcade/dollar/tree/master.png?style=badge" alt="Circle CI" /></a></h1> 
+</div>
 			</div>
 		</div>
 	</div>
