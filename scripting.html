@@ -18,6 +18,10 @@ a=2
 a=3
 a=4
  
+</code></pre>
+<pre><code>2
+3
+4
 </code></pre><p>That remarkable piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
 <pre><code class="dollar"><br/>b=1
 a=1
@@ -26,7 +30,12 @@ a=2
 a=3
 a=4
 b=2 
-</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions !! When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
+</code></pre>
+<pre><code>a=2, b=1 new value was 2
+a=3, b=1 new value was 3
+a=4, b=1 new value was 4
+a=4, b=2 new value was 2
+</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions !! When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
 <pre><code class="dollar"><br/>variableA = 1
 variableB = $variableA
 variableA = 2
