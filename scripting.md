@@ -2,7 +2,10 @@
 
 
 Introduction
-------------
+============
+
+Executable Documentation
+------------------------
 
 Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar. 
 
