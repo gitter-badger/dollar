@@ -40,7 +40,7 @@ block2 := {1;2;}
 
 =&gt; $block2 == 2
 
-</code></pre><p>When a line block is evaluated the result is the value of the last entry. For advanced users note that all lines will be evaluated, the value is just ignored. A line block behaves a lot like a function in an imperative language.</p><p>Next we have the array block, the array block preserves all the values and has the same format as a line block but is delimited by <code>[</code> and <code>]</code>.</p>
+</code></pre><p>When a line block is evaluated the result is the value of the last entry. For advanced users note that all lines will be evaluated, the value is just ignored. A line block behaves a lot like a function in an imperative language.</p><p>Next we have the array block, the array block preserves all the values each part is seperated by either a <code>,</code> or a newline but is delimited by <code>[</code> and <code>]</code>.</p>
 <pre><code class="dollar"><br/>array := [
     &quot;Hello &quot;
     &quot;World&quot;
@@ -64,4 +64,20 @@ appending2 := { 1, 2}
 
 =&gt; $appending2 == 3
 
+</code></pre><p>Appending blocks can be combined with the pair <code>:</code> operator to create maps/JSON like this:</p>
+<pre><code class="dollar"><br/>appending := {
+    first:&quot;Hello &quot;,
+    second:&quot;World&quot;
+}
+
+&gt;&gt; $appending
+
+=&gt; $appending.second == &quot;World&quot;
+
+</code></pre><p>The stdout operator <code>&gt;&gt;</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
+<pre><code class="dollar"><br/>pair1 = first : &quot;Hello &quot;;
+pair2 = second : &quot;World&quot;;
+  
+=&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
+ 
 </code></pre>
