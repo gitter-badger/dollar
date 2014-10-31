@@ -11,7 +11,22 @@ variableB := $variableA
 variableA := 2
 
 =&gt; $variableB == 2 
-</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
+</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the ? or listen operator :</p>
+<pre><code class="dollar"><br/>a=1
+$a ? { &gt;&gt; $a }
+a=2
+a=3
+a=4
+ 
+</code></pre><p>That remarkable piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
+<pre><code class="dollar"><br/>b=1
+a=1
+[$a, $b] ? { &gt;&gt; &quot;a=&quot; + $a + &quot;, b=&quot; + $b +&quot; new value was &quot;+$1}
+a=2
+a=3
+a=4
+b=2 
+</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions !! When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
 <pre><code class="dollar"><br/>variableA = 1
 variableB = $variableA
 variableA = 2
@@ -79,5 +94,12 @@ appending2 := { 1, 2}
 pair2 := second : &quot;World&quot;;
   
 =&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
+ 
+</code></pre>
+<pre><code class="dollar"><br/>a=1
+$a ? { &gt;&gt; $a }
+a=2
+a=3
+a=4
  
 </code></pre>
