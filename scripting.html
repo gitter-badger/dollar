@@ -75,8 +75,8 @@ appending2 := { 1, 2}
 =&gt; $appending.second == &quot;World&quot;
 
 </code></pre><p>The stdout operator <code>&gt;&gt;</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
-<pre><code class="dollar"><br/>pair1 = first : &quot;Hello &quot;;
-pair2 = second : &quot;World&quot;;
+<pre><code class="dollar"><br/>pair1 := first : &quot;Hello &quot;;
+pair2 := second : &quot;World&quot;;
   
 =&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
  
