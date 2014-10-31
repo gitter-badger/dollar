@@ -1,0 +1,83 @@
+<h1>Introduction</h1><h2>Executable Documentation</h2><p>Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar. </p><p>Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with:</p>
+<pre><code>#!/usr/bin/env dollar
+</code></pre><p>So it can be executed directly from a Unix command line.</p><p>The source for this page (minus that header) is <a href="scripting.md">here</a></p><h2>Getting Started</h2><p>NOTE: At present only Mac OS X is officially supported, however since Dollar is entirely based in Java it's trivial to port to other systems.</p><p>First download the Dollar scripting runtime from <a href="https://bintray.com/neilellis/dollar/dollar-runtime-osx/_latestVersion"> <img src="https://api.bintray.com/packages/neilellis/dollar/dollar-runtime-osx/images/download.svg" alt="Download""/> </a> </p><p>Make sure <code>dollar/bin</code> is on your PATH.</p><p>Run <code>dollar &lt;filename&gt;</code> to execute a Dollar script. </p><p>Here is an example of what DollarScript looks like</p>
+<pre><code class="dollar  "><br/>testParams := ($2 + &quot; &quot; + $1)
+
+=&gt; $testParams (&quot;Hello&quot;, &quot;World&quot;) == &quot;World Hello&quot;
+
+</code></pre><h1>Understanding the Basics</h1><p>DollarScript has it's own peculiarities, mostly these exists to help with it's major function - data/API centric Internet applications. So it's important to understand the basic concepts before getting started.</p><h2>Reactive Programming</h2><p>DollarScript expressions are by default <em>lazy</em>, this is really important to understand otherwise you may get some surprises. This lazy evaluation makes DollarScript a <a href="http://en.wikipedia.org/wiki/Reactive_programming">reactive programming language</a> by default.</p><p>Let's see some of that behaviour in action:</p>
+<pre><code class="dollar"><br/>variableA := 1
+variableB := $variableA
+variableA := 2
+
+=&gt; $variableB == 2 
+</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
+<pre><code class="dollar"><br/>variableA = 1
+variableB = $variableA
+variableA = 2
+
+=&gt; $variableB == 1 
+</code></pre><p>So as you can see when we use the <code>=</code> assignment operator we assign the <em>value</em> of the right hand side to the variable. Watch what happens when we use expressions.</p>
+<pre><code class="dollar"><br/>variableA = 1
+variableB = $variableA
+variableC = ($variableA +1 )
+variableD := ($variableA + 1)
+variableA = 2
+
+=&gt; $variableB == 1 
+=&gt; $variableC == 2 
+=&gt; $variableD == 3
+ 
+</code></pre><p>So <code>:=</code> allows the default behaviour of Dollar, which is to make everything declarative, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>&lt;&gt;</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h2>Blocks</h2><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
+<pre><code class="dollar"><br/>block := {
+    &quot;Hello &quot;
+    &quot;World&quot;
+}
+
+=&gt; $block == &quot;World&quot;
+
+block2 := {1;2;}
+
+=&gt; $block2 == 2
+
+</code></pre><p>When a line block is evaluated the result is the value of the last entry. For advanced users note that all lines will be evaluated, the value is just ignored. A line block behaves a lot like a function in an imperative language.</p><p>Next we have the array block, the array block preserves all the values each part is seperated by either a <code>,</code> or a newline but is delimited by <code>[</code> and <code>]</code>.</p>
+<pre><code class="dollar"><br/>array := [
+    &quot;Hello &quot;
+    &quot;World&quot;
+]
+
+=&gt; $array == [&quot;Hello &quot;,&quot;World&quot;]
+
+array2 := [1,2]
+
+=&gt; $array2 == [1,2]
+
+</code></pre><p>Finally we have the appending block, when an appending (or map) block is evaluated the result is the concatenation (using $plus() in the Dollar API) of the parts from top to bottom. The appending block starts and finishes with the <code>{</code> <code>}</code> braces, however each part is seperated by a <code>,</code> not a <code>;</code> or <em>newline</em></p>
+<pre><code class="dollar"><br/>appending := {
+    &quot;Hello &quot;,
+    &quot;World&quot;
+}
+
+=&gt; $appending == &quot;Hello World&quot;
+
+appending2 := { 1, 2}
+
+=&gt; $appending2 == 3
+
+</code></pre><p>Appending blocks can be combined with the pair <code>:</code> operator to create maps/JSON like this:</p>
+<pre><code class="dollar"><br/>appending := {
+    first:&quot;Hello &quot;,
+    second:&quot;World&quot;
+}
+
+&gt;&gt; $appending
+
+=&gt; $appending.second == &quot;World&quot;
+
+</code></pre><p>The stdout operator <code>&gt;&gt;</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
+<pre><code class="dollar"><br/>pair1 := first : &quot;Hello &quot;;
+pair2 := second : &quot;World&quot;;
+  
+=&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
+ 
+</code></pre>
