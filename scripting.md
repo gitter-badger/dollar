@@ -9,7 +9,7 @@ Executable Documentation
 
 Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar. 
 
-Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with  ->
+Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with:
 
 
 ```
@@ -29,7 +29,6 @@ First download the Dollar scripting runtime from [ ![Download](https://api.bintr
 Make sure `dollar/bin` is on your PATH.
 
 Run `dollar <filename>` to execute a Dollar script. 
-
  
 Here is an example of what DollarScript looks like
 
@@ -39,9 +38,6 @@ testParams := ($2 + " " + $1)
 
 => $testParams ("Hello", "World") == "World Hello"
 
-
-!! $testParams ("Hello", "World")
-
 ```
 
 Understanding the Basics
@@ -49,10 +45,10 @@ Understanding the Basics
 
 DollarScript has it's own peculiarities, mostly these exists to help with it's major function - data/API centric Internet applications. So it's important to understand the basic concepts before getting started.
 
-Declaration
------------
+Reactive Programming
+--------------------
 
-Dollar expressions are by default *lazy*, this is really important to understand otherwise you may get some suprises.
+DollarScript expressions are by default *lazy*, this is really important to understand otherwise you may get some surprises. This lazy evaluation makes DollarScript a [reactive programming language](http://en.wikipedia.org/wiki/Reactive_programming) by default.
 
 
 Let's see some of that behaviour in action:
@@ -66,7 +62,7 @@ variableA := 2
 => $variableB == 2 
 ```
 
-In the above example we are declaring (using the declarative operator `:=`) that variableA is current the value 1, we then declare that variableB is the *same as* variableB. So when we change variableA to 2 we also change variableB to 2.
+In the above example we are declaring (using the declarative operator `:=`) that variableA is current the value 1, we then declare that variableB is the *same as* variableA. So when we change variableA to 2 we also change variableB to 2.
 
 The assertion operator `=>` will throw an assertion error if the value following is either non boolean or not true.
 
@@ -74,7 +70,7 @@ The assertion operator `=>` will throw an assertion error if the value following
 Assignment
 ----------
 
-Obviously the declarative behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.
+Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.
 
 ```dollar
 
@@ -102,6 +98,8 @@ variableA = 2
  
 ```
 
-So `:=` allows the default behaviour of Dollar, which is to make everything declarative, and `=` is used to nail down a particular value.
+So `:=` allows the default behaviour of Dollar, which is to make everything declarative, and `=` is used to nail down a particular value. Later we'll come across the value anchor operator or diamond `<>` which instructs DollarScript to fix a value at the time of declaration. More on that later.
+
+
 
 

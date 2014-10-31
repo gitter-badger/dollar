@@ -1,20 +1,17 @@
-<h1>Introduction</h1><h2>Executable Documentation</h2><p>Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar. </p><p>Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with -&gt;</p>
+<h1>Introduction</h1><h2>Executable Documentation</h2><p>Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar. </p><p>Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with:</p>
 <pre><code>#!/usr/bin/env dollar
 </code></pre><p>So it can be executed directly from a Unix command line.</p><p>The source for this page (minus that header) is <a href="scripting.md">here</a></p><h2>Getting Started</h2><p>NOTE: At present only Mac OS X is officially supported, however since Dollar is entirely based in Java it's trivial to port to other systems.</p><p>First download the Dollar scripting runtime from <a href="https://bintray.com/neilellis/dollar/dollar-runtime-osx/_latestVersion"> <img src="https://api.bintray.com/packages/neilellis/dollar/dollar-runtime-osx/images/download.svg" alt="Download""/> </a> </p><p>Make sure <code>dollar/bin</code> is on your PATH.</p><p>Run <code>dollar &lt;filename&gt;</code> to execute a Dollar script. </p><p>Here is an example of what DollarScript looks like</p>
 <pre><code class="dollar  "><br/>testParams := ($2 + &quot; &quot; + $1)
 
 =&gt; $testParams (&quot;Hello&quot;, &quot;World&quot;) == &quot;World Hello&quot;
 
-
-!! $testParams (&quot;Hello&quot;, &quot;World&quot;)
-
-</code></pre><h1>Understanding the Basics</h1><p>DollarScript has it's own peculiarities, mostly these exists to help with it's major function - data/API centric Internet applications. So it's important to understand the basic concepts before getting started.</p><h2>Declaration</h2><p>Dollar expressions are by default <em>lazy</em>, this is really important to understand otherwise you may get some suprises.</p><p>Let's see some of that behaviour in action:</p>
+</code></pre><h1>Understanding the Basics</h1><p>DollarScript has it's own peculiarities, mostly these exists to help with it's major function - data/API centric Internet applications. So it's important to understand the basic concepts before getting started.</p><h2>Reactive Programming</h2><p>DollarScript expressions are by default <em>lazy</em>, this is really important to understand otherwise you may get some surprises. This lazy evaluation makes DollarScript a <a href="http://en.wikipedia.org/wiki/Reactive_programming">reactive programming language</a> by default.</p><p>Let's see some of that behaviour in action:</p>
 <pre><code class="dollar"><br/>variableA := 1
 variableB := $variableA
 variableA := 2
 
 =&gt; $variableB == 2 
-</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableB. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><h2>Assignment</h2><p>Obviously the declarative behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
+</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
 <pre><code class="dollar"><br/>variableA = 1
 variableB = $variableA
 variableA = 2
@@ -31,4 +28,4 @@ variableA = 2
 =&gt; $variableC == 2 
 =&gt; $variableD == 3
  
-</code></pre><p>So <code>:=</code> allows the default behaviour of Dollar, which is to make everything declarative, and <code>=</code> is used to nail down a particular value.</p>
+</code></pre><p>So <code>:=</code> allows the default behaviour of Dollar, which is to make everything declarative, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>&lt;&gt;</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p>
