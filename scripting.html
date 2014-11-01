@@ -25,7 +25,7 @@ a=4
 </code></pre><p>That remarkable piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
 <pre><code class="dollar"><br/>b=1
 a=1
-$a + $b + 1 effects { &gt;&gt; &quot;a=&quot; + $a + &quot;, b=&quot; + $b}
+$a + $b + 1 causes { &gt;&gt; &quot;a=&quot; + $a + &quot;, b=&quot; + $b}
 a=2
 a=3
 a=4
@@ -104,11 +104,23 @@ pair2 := second : &quot;World&quot;;
   
 =&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
  
-</code></pre>
-<pre><code class="dollar"><br/>a=1
-$a effects { &gt;&gt; $a }
+</code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator. </p>
+<pre><code class="dollar"><br/>$a -&gt; { &gt;&gt; $a } //alternatively for clarity &#39;$a causes {&gt;&gt; $a} &#39;
+
+a=1
 a=2
 a=3
 a=4
+a=2
  
-</code></pre>
+</code></pre><p>When the code is executed we'll see the values 1,2,3,4,2 printed out, this is because whenever a changes the block { &gt;&gt; $a } is evaluated, resulting in the variable $a being printed to stdout. Imagine how useful that is for debugging changes to a variable!</p><p>Next we have the 'when' operator, there is no shorthand for this operator to help keep you code readable:</p>
+<pre><code class="dollar"><br/>a=1
+ 
+when $a == 2 { &gt;&gt; $a } //alternatively for clarity &#39;$a causes {&gt;&gt; $a} &#39;
+
+a=2
+a=3
+a=4
+a=2
+ 
+</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p>
