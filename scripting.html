@@ -25,7 +25,7 @@ a=4
 </code></pre><p>That remarkable piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
 <pre><code class="dollar"><br/>b=1
 a=1
-$a + $b + 1 ? { &gt;&gt; &quot;a=&quot; + $a + &quot;, b=&quot; + $b}
+$a + $b + 1 effects { &gt;&gt; &quot;a=&quot; + $a + &quot;, b=&quot; + $b}
 a=2
 a=3
 a=4
@@ -106,7 +106,7 @@ pair2 := second : &quot;World&quot;;
  
 </code></pre>
 <pre><code class="dollar"><br/>a=1
-$a ? { &gt;&gt; $a }
+$a effects { &gt;&gt; $a }
 a=2
 a=3
 a=4
