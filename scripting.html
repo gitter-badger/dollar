@@ -113,10 +113,10 @@ a=3
 a=4
 a=2
  
-</code></pre><p>When the code is executed we'll see the values 1,2,3,4,2 printed out, this is because whenever a changes the block { &gt;&gt; $a } is evaluated, resulting in the variable $a being printed to stdout. Imagine how useful that is for debugging changes to a variable!</p><p>Next we have the 'when' operator, there is no shorthand for this operator to help keep you code readable:</p>
+</code></pre><p>When the code is executed we'll see the values 1,2,3,4,2 printed out, this is because whenever <code>$a</code> changes the block { &gt;&gt; $a } is evaluated, resulting in the variable $a being printed to stdout. Imagine how useful that is for debugging changes to a variable!</p><p>Next we have the 'when' operator, there is no shorthand for this operator, to help keep you code readable:</p>
 <pre><code class="dollar"><br/>a=1
  
-when $a == 2 { &gt;&gt; $a } //alternatively for clarity &#39;$a causes {&gt;&gt; $a} &#39;
+when $a == 2 { &gt;&gt; $a } 
 
 a=2
 a=3
