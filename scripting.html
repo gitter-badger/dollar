@@ -35,7 +35,7 @@ b=2
 a=3, b=1 
 a=4, b=1 
 a=4, b=2 
-</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions !! When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).</p><h2>Assignment</h2><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
+</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions !! When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).</p><h3>Assignment</h3><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
 <pre><code class="dollar"><br/>variableA = 1
 variableB = $variableA
 variableA = 2
@@ -52,7 +52,7 @@ variableA = 2
 =&gt; $variableC == 2 
 =&gt; $variableD == 3
  
-</code></pre><p>So <code>:=</code> allows the default behaviour of Dollar, which is to make everything declarative, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>&lt;&gt;</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h2>Blocks</h2><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
+</code></pre><p>So <code>:=</code> allows the default behaviour of Dollar, which is to make everything declarative, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>&lt;&gt;</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h3>Blocks</h3><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
 <pre><code class="dollar"><br/>block := {
     &quot;Hello &quot;
     &quot;World&quot;
@@ -104,7 +104,7 @@ pair2 := second : &quot;World&quot;;
   
 =&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
  
-</code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator. </p>
+</code></pre><h3>Reactive Control Flow</h3><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator. </p>
 <pre><code class="dollar"><br/>$a -&gt; { &gt;&gt; $a } //alternatively for clarity &#39;$a causes {&gt;&gt; $a} &#39;
 
 a=1
@@ -123,4 +123,35 @@ a=3
 a=4
 a=2
  
-</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p>
+</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p><h3>Reactive Operators</h3><h4>Split, Filter and Aggregate</h4>
+<!--
+split - % <filter expression>
+
+Converts a list into a stream of values matching the filter
+
+```
+b := $a % (true)
+b := $a % ($1 > 3)
+```
+
+filter - ^ <filter expression>
+
+```
+b := $a ^ ($1 > 100)
+```
+
+b will not generate events if a's value is <= 100, also b will be void if queried during that state.
+
+aggregate - & <emit condition>
+
+Aggregate until emit condition is true and then emit the result
+
+$1 == aggregate
+$2 == previous value
+$3 == current value
+$4 == next value
+
+```
+    b :=  $a & ($2 == ';')
+```
+--><h2>Imperative Control Flow</h2><h2>Parameters &amp; Functions</h2><h2>Resources &amp; URIs</h2><h2>Iterative Operators</h2><h2>Numerical Operators</h2><h2>Pipe Operators</h2><h2>Modules &amp; Module Locators</h2><h2>Remaining Operators</h2><h2>Concurrency &amp; Threads</h2>
