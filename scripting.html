@@ -154,4 +154,23 @@ $4 == next value
 ```
     b :=  $a & ($2 == ';')
 ```
---><h2>Imperative Control Flow</h2><h2>Parameters &amp; Functions</h2><h2>Resources &amp; URIs</h2><h2>Iterative Operators</h2><h2>Numerical Operators</h2><h2>Pipe Operators</h2><h2>Modules &amp; Module Locators</h2><h2>Remaining Operators</h2><h2>Concurrency &amp; Threads</h2>
+--><h2>Imperative Control Flow</h2><h2>Parameters &amp; Functions</h2><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built using the <code>uri</code> operator</p>
+<pre><code class="dollar"><br/><br/>search=&quot;Unikitty&quot;
+dynamicURI= uri &quot;http://google.com?q=&quot;+$search
+
+marinaVideos = &lt;+ https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
+&gt;&gt; each $marinaVideos.results { $1.trackViewUrl }
+
+</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>$marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><h2>Iterative Operators</h2><h2>Numerical Operators</h2><h2>Arrays</h2><p>DollarScript's arrays are pretty similar to JavaScript. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
+<pre><code class="dollar">=&gt; [1,2,3] + 4 == [1,2,3,4];
+=&gt; [1,2,3,4] - 4 == [1,2,3];
+=&gt; [] + 1 == [1] ;
+=&gt; [1] + [1] == [1,[1]];
+=&gt; [1] + 1 == [1,1];
+
+[1,2,3][1] &lt;=&gt; 2
+</code></pre><p><em>Note we're introducing the assert equals or <code>&lt;=&gt;</code> operator here, this is a combination of <code>=&gt;</code> and <code>==</code> that will cause an error if the two values are not equal.</em></p><p>DollarScript maps are also associative arrays (like JavaScript) allowing you to request members from them using the array subscript syntax</p>
+<pre><code class="dollar">{&quot;key1&quot;:1,&quot;key2&quot;:2} [&quot;key&quot;+1] &lt;=&gt; 1
+{&quot;key1&quot;:1,&quot;key2&quot;:2} [1] &lt;=&gt; {&quot;key2&quot;:2}
+{&quot;key1&quot;:1,&quot;key2&quot;:2} [1][&quot;key2&quot;] &lt;=&gt; 2
+</code></pre><p>As you can see from the example you can request a key/value pair (or Tuple if you like) by it's position using a numeric subscript. Or you can treat it as an associative array and request an entry by specifying the key name. Any expression can be used as a subscript, numerical values will be used as indexes, otherwise the string value will be used as a key.</p><h2>Pipe Operators</h2><h2>Modules &amp; Module Locators</h2><h2>Remaining Operators</h2><h2>Concurrency &amp; Threads</h2>
