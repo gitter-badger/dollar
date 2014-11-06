@@ -36,7 +36,7 @@ Here is an example of what DollarScript looks like
 
 testParams := ($2 + " " + $1)
 
-=> $testParams ("Hello", "World") == "World Hello"
+=> testParams ("Hello", "World") == "World Hello"
 
 ```
 
@@ -260,47 +260,50 @@ a=2
 This time we'll just see the number 2 twice, this is because the `when` operator triggers the evaluation of the supplied block ONLY when the supplied expression (`$a == 2`) becomes true. 
 
 
-###Reactive Operators
- 
-####Split, Filter and Aggregate
-
-<!--
-split - % <filter expression>
-
-Converts a list into a stream of values matching the filter
-
-```
-b := $a % (true)
-b := $a % ($1 > 3)
-```
-
-filter - ^ <filter expression>
-
-```
-b := $a ^ ($1 > 100)
-```
-
-b will not generate events if a's value is <= 100, also b will be void if queried during that state.
-
-aggregate - & <emit condition>
-
-Aggregate until emit condition is true and then emit the result
-
-$1 == aggregate
-$2 == previous value
-$3 == current value
-$4 == next value
-
-```
-    b :=  $a & ($2 == ';')
-```
--->
 
 Imperative Control Flow
 -----------------------
 
 Parameters &amp; Functions
 ----------------------
+
+In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize *anything*. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.
+
+```dollar
+($2 + " " + $1)("Hello", "World") <=> "World Hello"
+
+```
+
+The naming of positional parameters is the same as in shell scripts.
+
+Now if we take this further we can use the declaration operator `:=` to say that a variable is equal to the expression we wish to parameterise, like so:
+
+```dollar
+
+testParams := ($2 + " " + $1)
+($testParams) ("Hello", "World") <=> "World Hello"
+
+```
+
+Yep we built a function just by naming an expression. You can name anything and parameterise it - including maps, lists, blocks and plain old expressions. 
+
+Obviously this syntax would be a bit clunky so DollarScript let's you use some nice syntatic sugar by letting you drop the $ operator and refer to the variable directly in this context.
+
+
+```dollar
+testParams := ($2 + " " + $1)
+testParams("Hello", "World") <=> "World Hello"
+```
+
+What about named parameters, that would be nice.
+
+```dollar
+testParams := ($last + " " + $first)
+testParams(first:"Hello", last:"World") <=> "World Hello"
+```
+
+Yep you can use named parameters, then refer to the values by the names passed in.
+
 
 Resources &amp; URIs
 --------------------
@@ -311,6 +314,7 @@ URIs are first class citizen's in DollarScript. They refer to a an arbitrary res
 
 
 search="Unikitty"
+
 dynamicURI= uri "http://google.com?q="+$search
 
 marinaVideos = <+ https://itunes.apple.com/search?term=Marina+And+The+Diamonds&entity=musicVideo
@@ -321,12 +325,38 @@ marinaVideos = <+ https://itunes.apple.com/search?term=Marina+And+The+Diamonds&e
 In this example we've requested a single value (using `<+`) from a uri and assigned the value to `$marinaVideos` then we simply iterate over the results  using `each` and each value (passed in to the scope as `$1`) we extract the `trackViewUrl`. The each operator returns a list of the results and that is what is passed to standard out.
 
 
+Using Java
+----------
+
+Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.
+
+```dollar
+
+variableA="Hello World"
+
+java = `out=scope.get("variableA");`
+
+$java <=> "Hello World"
+
+```
+
+A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The variable `in` will be available to you and will be of type me.neilellis.dollar.var - for more info check out the Dollar API documentation. The return type will also be of type `var` and is stored in the variable `out`. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.
+
+Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the `out` object directly (that's a pretty advanced topic).
+
 
 Iterative Operators
 -------------------
 
 Numerical Operators
 -------------------
+
+DollarScript support the basic numerical operators +,-,/,*,%
+
+Logical Operators
+-----------------
+
+DollarScript support the basic logical operators &&,||,!
 
 Arrays
 ------

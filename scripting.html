@@ -3,7 +3,7 @@
 </code></pre><p>So it can be executed directly from a Unix command line.</p><p>The source for this page (minus that header) is <a href="scripting.md">here</a></p><h2>Getting Started</h2><p>NOTE: At present only Mac OS X is officially supported, however since Dollar is entirely based in Java it's trivial to port to other systems.</p><p>First download the Dollar scripting runtime from <a href="https://bintray.com/neilellis/dollar/dollar-runtime-osx/_latestVersion"> <img src="https://api.bintray.com/packages/neilellis/dollar/dollar-runtime-osx/images/download.svg" alt="Download""/> </a> </p><p>Make sure <code>dollar/bin</code> is on your PATH.</p><p>Run <code>dollar &lt;filename&gt;</code> to execute a Dollar script. </p><p>Here is an example of what DollarScript looks like</p>
 <pre><code class="dollar  "><br/>testParams := ($2 + &quot; &quot; + $1)
 
-=&gt; $testParams (&quot;Hello&quot;, &quot;World&quot;) == &quot;World Hello&quot;
+=&gt; testParams (&quot;Hello&quot;, &quot;World&quot;) == &quot;World Hello&quot;
 
 </code></pre><h1>Understanding the Basics</h1><p>DollarScript has it's own peculiarities, mostly these exists to help with it's major function - data/API centric Internet applications. So it's important to understand the basic concepts before getting started.</p><h2>Reactive Programming</h2><p>DollarScript expressions are by default <em>lazy</em>, this is really important to understand otherwise you may get some surprises. This lazy evaluation makes DollarScript a <a href="http://en.wikipedia.org/wiki/Reactive_programming">reactive programming language</a> by default.</p><p>Let's see some of that behaviour in action:</p>
 <pre><code class="dollar"><br/>variableA := 1
@@ -123,45 +123,35 @@ a=3
 a=4
 a=2
  
-</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p><h3>Reactive Operators</h3><h4>Split, Filter and Aggregate</h4>
-<!--
-split - % <filter expression>
+</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p><h2>Imperative Control Flow</h2><h2>Parameters &amp; Functions</h2><p>In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize <em>anything</em>. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.</p>
+<pre><code class="dollar">($2 + &quot; &quot; + $1)(&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
 
-Converts a list into a stream of values matching the filter
+</code></pre><p>The naming of positional parameters is the same as in shell scripts.</p><p>Now if we take this further we can use the declaration operator <code>:=</code> to say that a variable is equal to the expression we wish to parameterise, like so:</p>
+<pre><code class="dollar"><br/>testParams := ($2 + &quot; &quot; + $1)
+($testParams) (&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
 
-```
-b := $a % (true)
-b := $a % ($1 > 3)
-```
-
-filter - ^ <filter expression>
-
-```
-b := $a ^ ($1 > 100)
-```
-
-b will not generate events if a's value is <= 100, also b will be void if queried during that state.
-
-aggregate - & <emit condition>
-
-Aggregate until emit condition is true and then emit the result
-
-$1 == aggregate
-$2 == previous value
-$3 == current value
-$4 == next value
-
-```
-    b :=  $a & ($2 == ';')
-```
---><h2>Imperative Control Flow</h2><h2>Parameters &amp; Functions</h2><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built using the <code>uri</code> operator</p>
+</code></pre><p>Yep we built a function just by naming an expression. You can name anything and parameterise it - including maps, lists, blocks and plain old expressions. </p><p>Obviously this syntax would be a bit clunky so DollarScript let's you use some nice syntatic sugar by letting you drop the $ operator and refer to the variable directly in this context.</p>
+<pre><code class="dollar">testParams := ($2 + &quot; &quot; + $1)
+testParams(&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
+</code></pre><p>What about named parameters, that would be nice.</p>
+<pre><code class="dollar">testParams := ($last + &quot; &quot; + $first)
+testParams(first:&quot;Hello&quot;, last:&quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
+</code></pre><p>Yep you can use named parameters, then refer to the values by the names passed in.</p><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built using the <code>uri</code> operator</p>
 <pre><code class="dollar"><br/><br/>search=&quot;Unikitty&quot;
+
 dynamicURI= uri &quot;http://google.com?q=&quot;+$search
 
 marinaVideos = &lt;+ https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
 &gt;&gt; each $marinaVideos.results { $1.trackViewUrl }
 
-</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>$marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><h2>Iterative Operators</h2><h2>Numerical Operators</h2><h2>Arrays</h2><p>DollarScript's arrays are pretty similar to JavaScript. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
+</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>$marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
+<pre><code class="dollar"><br/>variableA=&quot;Hello World&quot;
+
+java = `out=scope.get(&quot;variableA&quot;);`
+
+$java &lt;=&gt; &quot;Hello World&quot;
+
+</code></pre><p>A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The variable <code>in</code> will be available to you and will be of type me.neilellis.dollar.var - for more info check out the Dollar API documentation. The return type will also be of type <code>var</code> and is stored in the variable <code>out</code>. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.</p><p>Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the <code>out</code> object directly (that's a pretty advanced topic).</p><h2>Iterative Operators</h2><h2>Numerical Operators</h2><p>DollarScript support the basic numerical operators +,-,/,*,%</p><h2>Logical Operators</h2><p>DollarScript support the basic logical operators &amp;&amp;,||,!</p><h2>Arrays</h2><p>DollarScript's arrays are pretty similar to JavaScript. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
 <pre><code class="dollar">=&gt; [1,2,3] + 4 == [1,2,3,4];
 =&gt; [1,2,3,4] - 4 == [1,2,3];
 =&gt; [] + 1 == [1] ;
