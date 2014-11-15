@@ -13,7 +13,7 @@ variableA := 2
 =&gt; $variableB == 2 
 </code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the -&gt; or causes operator :</p>
 <pre><code class="dollar"><br/>a=1
-$a -&gt; { &gt;&gt; $a }
+a -&gt; { &gt;&gt; $1 }
 a=2
 a=3
 a=4
@@ -108,7 +108,8 @@ pair2 := &quot;second&quot; : &quot;World&quot;;
 =&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
  
 </code></pre><h3>Reactive Control Flow</h3><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator. </p>
-<pre><code class="dollar"><br/>$a -&gt; { &gt;&gt; $a } //alternatively for clarity &#39;$a causes {&gt;&gt; $a} &#39;
+<pre><code class="dollar"><br/>a=0
+$a -&gt; { &gt;&gt; $a } //alternatively for clarity &#39;$a causes {&gt;&gt; $a} &#39;
 
 a=1
 a=2
@@ -163,7 +164,11 @@ dynamicURI= uri &quot;camel:http://google.com?q=&quot;+$search
 marinaVideos = &lt;+ camel:https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
 &gt;&gt; $marinaVideos.results map { $1.trackViewUrl }
 
-</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>$marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
+</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>$marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><h3>Ranges</h3><p>DollarScript (at present) supports numerical and character ranges</p>
+<pre><code class="dollar"><br/>&quot;a&quot;..&quot;c&quot; &lt;=&gt; [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]
+1..3 &lt;=&gt; [1,2,3]
+
+</code></pre><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
 <pre><code class="dollar"><br/>variableA=&quot;Hello World&quot;
 
 java = `out=scope.get(&quot;variableA&quot;);`
