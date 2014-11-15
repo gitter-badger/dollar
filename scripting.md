@@ -56,10 +56,10 @@ Let's see some of that behaviour in action:
 ```dollar
 
 variableA := 1
-variableB := $variableA
+variableB := variableA
 variableA := 2
 
-=> $variableB == 2 
+=> variableB == 2
 ```
 
 In the above example we are declaring (using the declarative operator `:=`) that variableA is current the value 1, we then declare that variableB is the *same as* variableA. So when we change variableA to 2 we also change variableB to 2.
@@ -91,7 +91,7 @@ That remarkable piece of code will simply output each change made to the variabl
 
 b=1
 a=1
-$a + $b + 1 -> { >> "a=" + $a + ", b=" + $b}
+a + b + 1 -> { >> "a=" + a + ", b=" + b}
 a=2
 a=3
 a=4
@@ -115,10 +115,10 @@ Obviously the declarative/reactive behavior is fantastic for templating and crea
 ```dollar
 
 variableA = 1
-variableB = $variableA
+variableB = variableA
 variableA = 2
 
-=> $variableB == 1 
+=> variableB == 1
 ```
 
 So as you can see when we use the `=` assignment operator we assign the *value* of the right hand side to the variable. Watch what happens when we use expressions.
@@ -127,18 +127,18 @@ So as you can see when we use the `=` assignment operator we assign the *value* 
 ```dollar
 
 variableA = 1
-variableB = $variableA
-variableC = ($variableA +1 )
-variableD := ($variableA + 1)
+variableB = variableA
+variableC = (variableA +1 )
+variableD := (variableA + 1)
 variableA = 2
 
-=> $variableB == 1 
-=> $variableC == 2 
-=> $variableD == 3
+=> variableB == 1
+=> variableC == 2
+=> variableD == 3
 
 ```
 
-It's important to note that all values in DollarScript are immutable - that means if you wish to change the value of a variable you *must* __reassign__ a new value to the variable. For example `$v++` would return the value of `$v+1` it does not increment v. If however you want to assign a constant value, one that is both immutable and cannot be reassigned, just use the `const` modifier at the variable assignment (this does not make sense for declarations, so is only available on assignments).
+It's important to note that all values in DollarScript are immutable - that means if you wish to change the value of a variable you *must* __reassign__ a new value to the variable. For example `v++` would return the value of `v+1` it does not increment v. If however you want to assign a constant value, one that is both immutable and cannot be reassigned, just use the `const` modifier at the variable assignment (this does not make sense for declarations, so is only available on assignments).
 
 ```dollar
 const MEDIUM = 23
@@ -176,11 +176,11 @@ array := [
     "World"
 ]
 
-=> $array == ["Hello ","World"]
+=> array == ["Hello ","World"]
 
 array2 := [1,2]
 
-=> $array2 == [1,2]
+=> array2 == [1,2]
 
 ```
 
@@ -197,7 +197,7 @@ appending := {
 
 appending2 := { 1, 2}
 
-=> $appending2 == 3
+=> appending2 == 3
 
 ```
 
@@ -224,7 +224,7 @@ The stdout operator `>>` is used to send a value to stdout in it's serialized (J
 pair1 := "first" : "Hello ";
 pair2 := "second" : "World";
   
-=> $pair1 + $pair2 == {"first":"Hello ","second":"World"}
+=> pair1 + pair2 == {"first":"Hello ","second":"World"}
  
 ```
 
@@ -237,7 +237,7 @@ Let's start with the simplest reactive control flow operator, the '->' or 'cause
 ```dollar
 
 a=0
-$a -> { >> $a } //alternatively for clarity '$a causes {>> $a} '
+a -> { >> a } //alternatively for clarity 'a causes {>> a} '
 
 a=1
 a=2
@@ -256,7 +256,7 @@ Next we have the 'when' operator, there is no shorthand for this operator, to he
 
 a=1
  
-when $a == 2 { >> $a } 
+when a == 2 { >> a }
 
 a=2
 a=3
@@ -265,7 +265,7 @@ a=2
  
 ```
 
-This time we'll just see the number 2 twice, this is because the `when` operator triggers the evaluation of the supplied block ONLY when the supplied expression (`$a == 2`) becomes true. 
+This time we'll just see the number 2 twice, this is because the `when` operator triggers the evaluation of the supplied block ONLY when the supplied expression (`a == 2`) becomes true.
 
 
 
@@ -278,8 +278,8 @@ DollarScript supports the usual imperative control flow but, unlike some languag
 ```dollar
 
 a=1
-b= if $a==1 2 else 3
-$b <=> 2
+b= if a==1 2 else 3
+b <=> 2
 
 ```
 So let's start with the `if` operator. The `if` operator is seperate from the `else` operator, it simply evaluates the condition supplied as the first argument. If that value is boolean and true it evaluates the second argument and returns it's value; otherwise it returns boolean false.
@@ -292,8 +292,8 @@ The combined effect of these two operators is to provide the usual if/else/else 
 
 a=5
 #Parenthesis added for clarity, not required.
-b= if ($a == 1) "one" else if ($a == 2) "two" else "more than two"
-=> $b == "more than two"
+b= if (a == 1) "one" else if (a == 2) "two" else "more than two"
+=> b == "more than two"
 
 ```
 
@@ -302,7 +302,7 @@ b= if ($a == 1) "one" else if ($a == 2) "two" else "more than two"
 ```dollar
 
 for i in 1..10 {
-    >> $i
+    >> i
 }
 
 ```
@@ -324,24 +324,17 @@ Now if we take this further we can use the declaration operator `:=` to say that
 ```dollar
 
 testParams := ($2 + " " + $1)
-($testParams) ("Hello", "World") <=> "World Hello"
+testParams ("Hello", "World") <=> "World Hello"
 
 ```
 
 Yep we built a function just by naming an expression. You can name anything and parameterise it - including maps, lists, blocks and plain old expressions. 
 
-Obviously this syntax would be a bit clunky so DollarScript let's you use some nice syntatic sugar by letting you drop the $ operator and refer to the variable directly in this context.
-
-
-```dollar
-testParams := ($2 + " " + $1)
-testParams("Hello", "World") <=> "World Hello"
-```
 
 What about named parameters, that would be nice.
 
 ```dollar
-testParams := ($last + " " + $first)
+testParams := (last + " " + first)
 testParams(first:"Hello", last:"World") <=> "World Hello"
 ```
 
@@ -361,7 +354,7 @@ search="Unikitty"
 dynamicURI= uri "camel:http://google.com?q="+$search
 
 marinaVideos = <+ camel:https://itunes.apple.com/search?term=Marina+And+The+Diamonds&entity=musicVideo
->> $marinaVideos.results map { $1.trackViewUrl }
+>> marinaVideos.results map { $1.trackViewUrl }
 
 ```
 
@@ -390,7 +383,7 @@ variableA="Hello World"
 
 java = `out=scope.get("variableA");`
 
-$java <=> "Hello World"
+java <=> "Hello World"
 
 ```
 
