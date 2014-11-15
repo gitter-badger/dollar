@@ -181,7 +181,7 @@ $java &lt;=&gt; &quot;Hello World&quot;
 =&gt;  ~ {&quot;a&quot; : 1}
 =&gt; ! ~ void
 
-</code></pre><h2>Arrays</h2><p>DollarScript's arrays are pretty similar to JavaScript. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
+</code></pre><h3>Lists</h3><p>DollarScript's lists are pretty similar to JavaScript arrays. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
 <pre><code class="dollar">=&gt; [1,2,3] + 4 == [1,2,3,4];
 =&gt; [1,2,3,4] - 4 == [1,2,3];
 =&gt; [] + 1 == [1] ;
@@ -193,4 +193,7 @@ $java &lt;=&gt; &quot;Hello World&quot;
 <pre><code class="dollar">{&quot;key1&quot;:1,&quot;key2&quot;:2} [&quot;key&quot;+1] &lt;=&gt; 1
 {&quot;key1&quot;:1,&quot;key2&quot;:2} [1] &lt;=&gt; {&quot;key2&quot;:2}
 {&quot;key1&quot;:1,&quot;key2&quot;:2} [1][&quot;key2&quot;] &lt;=&gt; 2
-</code></pre><p>As you can see from the example you can request a key/value pair (or Tuple if you like) by it's position using a numeric subscript. Or you can treat it as an associative array and request an entry by specifying the key name. Any expression can be used as a subscript, numerical values will be used as indexes, otherwise the string value will be used as a key.</p><h2>Pipe Operators</h2><h2>Modules &amp; Module Locators</h2><h2>Remaining Operators</h2><h2>Concurrency &amp; Threads</h2>
+</code></pre><p>As you can see from the example you can request a key/value pair (or Tuple if you like) by it's position using a numeric subscript. Or you can treat it as an associative array and request an entry by specifying the key name. Any expression can be used as a subscript, numerical values will be used as indexes, otherwise the string value will be used as a key.</p><h3>Types</h3><p>Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, NUMBER, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the <code>is</code> operator:</p>
+<pre><code class="dollar">=&gt; &quot;Hello World&quot; is STRING
+=&gt; [&quot;Hello World&quot;] is LIST
+</code></pre><h2>Pipe Operators</h2><h2>Modules &amp; Module Locators</h2><h2>Remaining Operators</h2><h2>Concurrency &amp; Threads</h2>
