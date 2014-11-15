@@ -51,8 +51,11 @@ variableA = 2
 =&gt; $variableB == 1 
 =&gt; $variableC == 2 
 =&gt; $variableD == 3
- 
-</code></pre><p>So <code>:=</code> allows the default behaviour of Dollar, which is to make everything declarative, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>&lt;&gt;</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h3>Blocks</h3><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
+
+</code></pre><p>It's important to note that all values in DollarScript are immutable - that means if you wish to change the value of a variable you <em>must</em> <strong>reassign</strong> a new value to the variable. For example <code>$v++</code> would return the value of <code>$v+1</code> it does not increment v. If however you want to assign a constant value, one that is both immutable and cannot be reassigned, just use the <code>const</code> modifier at the variable assignment (this does not make sense for declarations, so is only available on assignments).</p>
+<pre><code class="dollar">const MEDIUM = 23
+# MEDIUM= 4 would now produce an error
+</code></pre><p>So <code>:=</code> supports the reactive behaviour of Dollar, i.e. it is a declaration not a value assignment, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>&lt;&gt;</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h3>Blocks</h3><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
 <pre><code class="dollar"><br/>block := {
     &quot;Hello &quot;
     &quot;World&quot;
@@ -90,8 +93,8 @@ appending2 := { 1, 2}
 
 </code></pre><p>Appending blocks can be combined with the pair <code>:</code> operator to create maps/JSON like this:</p>
 <pre><code class="dollar"><br/>appending := {
-    first:&quot;Hello &quot;,
-    second:&quot;World&quot;
+    &quot;first&quot;:&quot;Hello &quot;,
+   &quot;second&quot;:&quot;World&quot;
 }
 
 &gt;&gt; $appending
@@ -99,8 +102,8 @@ appending2 := { 1, 2}
 =&gt; $appending.second == &quot;World&quot;
 
 </code></pre><p>The stdout operator <code>&gt;&gt;</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
-<pre><code class="dollar"><br/>pair1 := first : &quot;Hello &quot;;
-pair2 := second : &quot;World&quot;;
+<pre><code class="dollar"><br/>pair1 := &quot;first&quot; : &quot;Hello &quot;;
+pair2 := &quot;second&quot; : &quot;World&quot;;
   
 =&gt; $pair1 + $pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
  
@@ -123,7 +126,23 @@ a=3
 a=4
 a=2
  
-</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p><h2>Imperative Control Flow</h2><h2>Parameters &amp; Functions</h2><p>In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize <em>anything</em>. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.</p>
+</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>$a == 2</code>) becomes true. </p><h3>Imperative Control Flow</h3><h4>If</h4><p>DollarScript supports the usual imperative control flow but, unlike some languages, everything is an operator. This is the general rule of DollarScript, everything has a value. DollarScript does not have the concept of statements and expressions, just expressions. This means that you can use control flow in an expression.</p>
+<pre><code class="dollar"><br/>a=1
+b= if $a==1 2 else 3
+$b &lt;=&gt; 2
+
+</code></pre><p>So let's start with the <code>if</code> operator. The <code>if</code> operator is seperate from the <code>else</code> operator, it simply evaluates the condition supplied as the first argument. If that value is boolean and true it evaluates the second argument and returns it's value; otherwise it returns boolean false.</p><p>The <code>else</code> operator is a binary operator which evaluates the left-hand-side (usually the result of an <code>if</code> statement), if that has a value of false then the right-hand-side is evaluated and it's result returned, otherwise it returns the left-hand-side.</p><p>The combined effect of these two operators is to provide the usual if/else/else if/ control flow</p>
+<pre><code class="dollar"><br/>a=5
+#Parenthesis added for clarity, not required.
+b= if ($a == 1) &quot;one&quot; else if ($a == 2) &quot;two&quot; else &quot;more than two&quot;
+=&gt; $b == &quot;more than two&quot;
+
+</code></pre><h4>For</h4>
+<pre><code class="dollar"><br/>for i in 1..10 {
+    &gt;&gt; $i
+}
+
+</code></pre><h2>Parameters &amp; Functions</h2><p>In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize <em>anything</em>. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.</p>
 <pre><code class="dollar">($2 + &quot; &quot; + $1)(&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
 
 </code></pre><p>The naming of positional parameters is the same as in shell scripts.</p><p>Now if we take this further we can use the declaration operator <code>:=</code> to say that a variable is equal to the expression we wish to parameterise, like so:</p>
@@ -151,7 +170,18 @@ java = `out=scope.get(&quot;variableA&quot;);`
 
 $java &lt;=&gt; &quot;Hello World&quot;
 
-</code></pre><p>A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The return type will be of type <code>var</code> and is stored in the variable <code>out</code>. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.</p><p>Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the <code>out</code> object directly (that's a pretty advanced topic).</p><h2>Iterative Operators</h2><h2>Numerical Operators</h2><p>DollarScript support the basic numerical operators +,-,/,*,%</p><h2>Logical Operators</h2><p>DollarScript support the basic logical operators &amp;&amp;,||,!</p><h2>Arrays</h2><p>DollarScript's arrays are pretty similar to JavaScript. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
+</code></pre><p>A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The return type will be of type <code>var</code> and is stored in the variable <code>out</code>. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.</p><p>Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the <code>out</code> object directly (that's a pretty advanced topic).</p><h2>Iterative Operators</h2><h2>Numerical Operators</h2><p>DollarScript support the basic numerical operators +,-,/,*,%</p><h2>Logical Operators</h2><p>DollarScript support the basic logical operators &amp;&amp;,||,! as well as the truthy operator <code>~</code></p><p>The truthy operator converts any value to a boolean by applying the rule that: void is false, 0 is false, "" is false, empty list is false, empty map is false - all else is true.</p>
+<pre><code class="dollar"><br/>=&gt; ~ [1,2,3]
+=&gt; ! ~ []
+=&gt; ~ &quot;anything&quot;
+=&gt; ! ~ &quot;&quot;
+=&gt; ~ 1
+=&gt; ! ~ 0
+=&gt; ! ~ {void}
+=&gt;  ~ {&quot;a&quot; : 1}
+=&gt; ! ~ void
+
+</code></pre><h2>Arrays</h2><p>DollarScript's arrays are pretty similar to JavaScript. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
 <pre><code class="dollar">=&gt; [1,2,3] + 4 == [1,2,3,4];
 =&gt; [1,2,3,4] - 4 == [1,2,3];
 =&gt; [] + 1 == [1] ;
