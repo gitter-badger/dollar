@@ -55,7 +55,7 @@ variableA = 2
 </code></pre><p>It's important to note that all values in DollarScript are immutable - that means if you wish to change the value of a variable you <em>must</em> <strong>reassign</strong> a new value to the variable. For example <code>v++</code> would return the value of <code>v+1</code> it does not increment v. If however you want to assign a constant value, one that is both immutable and cannot be reassigned, just use the <code>const</code> modifier at the variable assignment (this does not make sense for declarations, so is only available on assignments).</p>
 <pre><code class="dollar">const MEDIUM = 23
 // MEDIUM= 4 would now produce an error
-</code></pre><p>So <code>:=</code> supports the reactive behaviour of Dollar, i.e. it is a declaration not a value assignment, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>@</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h3>Blocks</h3><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
+</code></pre><p>So <code>:=</code> supports the reactive behaviour of Dollar, i.e. it is a declaration not a value assignment, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>@</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h3>Blocks</h3><h4>Line Block</h4><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
 <pre><code class="dollar"><br/>block := {
     &quot;Hello &quot;
     &quot;World&quot;
@@ -67,19 +67,19 @@ block2 := {1;2;}
 
 .: block2 == 2
 
-</code></pre><p>When a line block is evaluated the result is the value of the last entry. For advanced users note that all lines will be evaluated, the value is just ignored. A line block behaves a lot like a function in an imperative language.</p><p>Next we have the array block, the array block preserves all the values each part is seperated by either a <code>,</code> or a newline but is delimited by <code>[</code> and <code>]</code>.</p>
-<pre><code class="dollar"><br/>array := [
+</code></pre><p>When a line block is evaluated the result is the value of the last entry. For advanced users note that all lines will be evaluated, the value is just ignored. A line block behaves a lot like a function in an imperative language.</p><h4>List Block</h4><p>Next we have the list block, the list block preserves all the values each part is seperated by either a <code>,</code> or a newline but is delimited by <code>[</code> and <code>]</code>.</p>
+<pre><code class="dollar"><br/>list := [
     &quot;Hello &quot;
     &quot;World&quot;
 ]
 
-.: array == [&quot;Hello &quot;,&quot;World&quot;]
+.: list == [&quot;Hello &quot;,&quot;World&quot;]
 
-array2 := [1,2]
+list2 := [1,2]
 
-.: array2 == [1,2]
+.: list2 == [1,2]
 
-</code></pre><p>Finally we have the appending block, when an appending (or map) block is evaluated the result is the concatenation (using $plus() in the Dollar API) of the parts from top to bottom. The appending block starts and finishes with the <code>{</code> <code>}</code> braces, however each part is seperated by a <code>,</code> not a <code>;</code> or <em>newline</em></p>
+</code></pre><h4>Appending / Map Block</h4><p>Finally we have the appending block, when an appending (or map) block is evaluated the result is the concatenation (using $plus() in the Dollar API) of the parts from top to bottom. The appending block starts and finishes with the <code>{</code> <code>}</code> braces, however each part is seperated by a <code>,</code> not a <code>;</code> or <em>newline</em></p>
 <pre><code class="dollar"><br/>appending := {
     &quot;Hello &quot;,
     &quot;World&quot;
@@ -118,7 +118,7 @@ pair2 := &quot;second&quot; : &quot;World&quot;;
 
 </code></pre><p><em>Note we're using the assert equals or <code>&lt;=&gt;</code> operator here, this is a combination of <code>.:</code> and <code>==</code> that will cause an error if the two values are not equal.</em></p><p>You can count the size of the list using the size operator <code>#</code>.</p>
 <pre><code class="dollar">#[1,2,3,4] &lt;=&gt; 4
-</code></pre><p>DollarScript maps are also associative arrays (like JavaScript) allowing you to request members from them using the array subscript syntax</p>
+</code></pre><p>DollarScript maps are also associative arrays (like JavaScript) allowing you to request members from them using the list subscript syntax</p>
 <pre><code class="dollar">{&quot;key1&quot;:1,&quot;key2&quot;:2} [&quot;key&quot;+1] &lt;=&gt; 1
 {&quot;key1&quot;:1,&quot;key2&quot;:2} [1] &lt;=&gt; {&quot;key2&quot;:2}
 {&quot;key1&quot;:1,&quot;key2&quot;:2} [1][&quot;key2&quot;] &lt;=&gt; 2
@@ -131,10 +131,10 @@ pair2 := &quot;second&quot; : &quot;World&quot;;
 error { @@ msg; errorHappened= true; }
 a=1/0
 .: errorHappened
-</code></pre><h3>Types and Constraints</h3><p>Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, NUMBER, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the <code>is</code> operator:</p>
+</code></pre><h2>Type System</h2><h3>Types</h3><p>Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, NUMBER, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the <code>is</code> operator:</p>
 <pre><code class="dollar">.: &quot;Hello World&quot; is STRING
 .: [&quot;Hello World&quot;] is LIST
-</code></pre><p>Although there are no compile type constraints in DollarScript a runtime type system can be built using constraints. Constraints are declared at the time of variable assignment or declaration. A constraint once declared on a variable cannot be changed. The constraint is placed before the variable name at the time of declaration in parenthesis.</p>
+</code></pre><h3>Constraints</h3><p>Although there are no compile type constraints in DollarScript a runtime type system can be built using constraints. Constraints are declared at the time of variable assignment or declaration. A constraint once declared on a variable cannot be changed. The constraint is placed before the variable name at the time of declaration in parenthesis.</p>
 <pre><code class="dollar">(it &lt; 100) a = 50
 (it &gt; previous || previous is VOID) b = 5
 b=6
@@ -154,7 +154,44 @@ error { @@ msg }
 myColor=&quot;apple&quot;
 
 </code></pre><p>Of course since the use of <code>(it is XXXX)</code> is very common DollarScript provides a specific runtime type constraint that can be added in conjunction with other constraints. Simply prefix the assignment or decleration with <code>&lt;XXXX&gt;</code> where XXXX is the runtime type.</p>
-<pre><code class="dollar">&lt;string&gt; s=&quot;String value&quot;
+<pre><code class="dollar">&lt;string&gt; (#it &gt; 5) s=&quot;String value&quot;
+</code></pre><h3>Type Coercion</h3><p>DollarScript also supports type coercion, this is done using the <code>as</code> operator followed by the type to coerce to.</p>
+<pre><code class="dollar">&lt;string&gt; s= 1 as string
+s &lt;=&gt; &quot;1&quot;
+</code></pre><p>A few more examples follow.</p>
+<pre><code class="dollar">1 as string &lt;=&gt; &quot;1&quot;
+1 as boolean &lt;=&gt; true
+1 as list &lt;=&gt; [1]
+1 as map &lt;=&gt; {&quot;value&quot;:1}
+1 as VOID &lt;=&gt; void
+1 as number &lt;=&gt; 1
+
+&quot;1&quot; as number &lt;=&gt; 1
+&quot;http://google.com&quot; as uri
+&quot;1&quot; as VOID &lt;=&gt; void
+&quot;true&quot; as boolean &lt;=&gt; true
+&quot;1&quot; as boolean &lt;=&gt; false
+&quot;1&quot; as list &lt;=&gt; [&quot;1&quot;]
+&quot;1&quot; as map &lt;=&gt; {&quot;value&quot;:&quot;1&quot;}
+&quot;1&quot; as string &lt;=&gt; &quot;1&quot;
+
+true as string &lt;=&gt; &quot;true&quot;
+true as number &lt;=&gt; 1
+true as list &lt;=&gt; [true]
+true as map &lt;=&gt; {&quot;value&quot;:true}
+true as boolean &lt;=&gt; true
+true as VOID &lt;=&gt; void
+
+
+[1,2,3] as string &lt;=&gt; &quot;[1,2,3]&quot;
+[1,2,3] as list &lt;=&gt; [1,2,3]
+[1,2,3] as boolean &lt;=&gt; true
+[1,2,3] as map &lt;=&gt; {&quot;value&quot;:[1,2,3]}
+
+{&quot;a&quot;:1,&quot;b&quot;:2} as string &lt;=&gt; &#39;{&quot;a&quot;:1,&quot;b&quot;:2}&#39;
+{&quot;a&quot;:1,&quot;b&quot;:2} as list &lt;=&gt; [&quot;a&quot;:1,&quot;b&quot;:2]
+{&quot;a&quot;:1,&quot;b&quot;:2} as boolean &lt;=&gt; true
+{&quot;a&quot;:1,&quot;b&quot;:2} as VOID &lt;=&gt; void
 </code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '=&gt;' or 'causes' operator.</p>
 <pre><code class="dollar"><br/>a=0
 a =&gt; { @@ a } //alternatively for clarity &#39;a causes {@@ a} &#39;
@@ -204,10 +241,10 @@ testParams(first:&quot;Hello&quot;, last:&quot;World&quot;) &lt;=&gt; &quot;Worl
 </code></pre><p>Yep you can use named parameters, then refer to the values by the names passed in.</p><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built using the <code>uri</code> operator</p>
 <pre><code class="dollar"><br/><br/>search=&quot;Unikitty&quot;
 
-dynamicURI= uri &quot;camel:http://google.com?q=&quot;+search
+dynamicURI= (&quot;camel:http://google.com?q=&quot;+search) as uri
 
 marinaVideos = &lt;&lt; camel:https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
-@@ marinaVideos.results map { $1.trackViewUrl }
+@@ marinaVideos.results each { $1.trackViewUrl }
 
 </code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><p>``</p><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
 <pre><code class="dollar"><br/>variableA=&quot;Hello World&quot;
@@ -216,7 +253,7 @@ java = `out=scope.get(&quot;variableA&quot;);`
 
 java &lt;=&gt; &quot;Hello World&quot;
 
-</code></pre><p>A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The return type will be of type <code>var</code> and is stored in the variable <code>out</code>. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.</p><p>Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the <code>out</code> object directly (that's a pretty advanced topic).</p><h2>Operators</h2><h3>Iterative Operators</h3><h3>Comparison Operators</h3><h3>Numerical Operators</h3><p>DollarScript support the basic numerical operators +,-,/,*,%</p><h3>Logical Operators</h3><p>DollarScript support the basic logical operators &amp;&amp;,||,! as well as the truthy operator <code>~</code></p><p>The truthy operator converts any value to a boolean by applying the rule that: void is false, 0 is false, "" is false, empty list is false, empty map is false - all else is true.</p>
+</code></pre><p>A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The return type will be of type <code>var</code> and is stored in the variable <code>out</code>. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.</p><p>Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the <code>out</code> object directly (that's a pretty advanced topic).</p><h2>Operators</h2><h3>Iterative Operators</h3><h3>Comparison Operators</h3><h3>Numerical Operators</h3><p>DollarScript support the basic numerical operators +,-,/,*,% as well as #</p><h3>Logical Operators</h3><p>DollarScript support the basic logical operators &amp;&amp;,||,! as well as the truthy operator <code>~</code></p><p>The truthy operator converts any value to a boolean by applying the rule that: void is false, 0 is false, "" is false, empty list is false, empty map is false - all else is true.</p>
 <pre><code class="dollar"><br/>.: ~ [1,2,3]
 .: ! ~ []
 .: ~ &quot;anything&quot;
