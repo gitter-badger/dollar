@@ -1,23 +1,23 @@
-<h2>Introduction</h2><h3>Executable Documentation</h3><p>Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar. </p><p>Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with:</p>
+<h2>Introduction</h2><h3>Executable Documentation</h3><p>Everything in this documentation is executed as part of the build process, so all the examples are guaranteed to run with the latest master branch of Dollar.</p><p>Yep Dollar can actually run Markdown files, in fact the source file that this page was built from starts with:</p>
 <pre><code>#!/usr/bin/env dollar
-</code></pre><p>So it can be executed directly from a Unix command line.</p><p>The source for this page (minus that header) is <a href="scripting.md">here</a></p><h3>Getting Started</h3><p>NOTE: At present only Mac OS X is officially supported, however since Dollar is entirely based in Java it's trivial to port to other systems.</p><p>First download the Dollar scripting runtime from <a href="https://bintray.com/neilellis/dollar/dollar-runtime-osx/_latestVersion"> <img src="https://api.bintray.com/packages/neilellis/dollar/dollar-runtime-osx/images/download.svg" alt="Download""/> </a> </p><p>Make sure <code>dollar/bin</code> is on your PATH.</p><p>Run <code>dollar &lt;filename&gt;</code> to execute a Dollar script. </p><p>Here is an example of what DollarScript looks like</p>
-<pre><code class="dollar  "><br/>testParams := ($2 + &quot; &quot; + $1)
+</code></pre><p>So it can be executed directly from a Unix command line.</p><p>The source for this page (minus that header) is <a href="scripting.md">here</a></p><h3>Getting Started</h3><p>NOTE: At present only Mac OS X is officially supported, however since Dollar is entirely based in Java it's trivial to port to other systems.</p><p>First download the Dollar scripting runtime from <a href="https://bintray.com/neilellis/dollar/dollar-runtime-osx/_latestVersion"> <img src="https://api.bintray.com/packages/neilellis/dollar/dollar-runtime-osx/images/download.svg" alt="Download""/> </a></p><p>Make sure <code>dollar/bin</code> is on your PATH.</p><p>Run <code>dollar &lt;filename&gt;</code> to execute a Dollar script.</p><p>Here is an example of what DollarScript looks like</p>
+<pre><code class="dollar"><br/>testParams := ($2 + &quot; &quot; + $1)
 
-=&gt; testParams (&quot;Hello&quot;, &quot;World&quot;) == &quot;World Hello&quot;
+.: testParams (&quot;Hello&quot;, &quot;World&quot;) == &quot;World Hello&quot;
 
 </code></pre><h2>Understanding the Basics</h2><p>DollarScript has it's own peculiarities, mostly these exists to help with it's major function - data/API centric Internet applications. So it's important to understand the basic concepts before getting started.</p><h3>Reactive Programming</h3><p>DollarScript expressions are by default <em>lazy</em>, this is really important to understand otherwise you may get some surprises. This lazy evaluation makes DollarScript a <a href="http://en.wikipedia.org/wiki/Reactive_programming">reactive programming language</a> by default.</p><p>Let's see some of that behaviour in action:</p>
 <pre><code class="dollar"><br/>variableA := 1
 variableB := variableA
 variableA := 2
 
-=&gt; variableB == 2
-</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>=&gt;</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the -&gt; or causes operator :</p>
+.: variableB == 2
+</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>.:</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the =&gt; or causes operator :</p>
 <pre><code class="dollar"><br/>a=1
-a -&gt; { &gt;&gt; $1 }
+a =&gt; { @@ $1 }
 a=2
 a=3
 a=4
- 
+
 </code></pre>
 <pre><code>2
 3
@@ -25,22 +25,22 @@ a=4
 </code></pre><p>That simple piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
 <pre><code class="dollar"><br/>b=1
 a=1
-a + b + 1 -&gt; { &gt;&gt; &quot;a=&quot; + a + &quot;, b=&quot; + b}
+a + b + 1 =&gt; { @@ &quot;a=&quot; + a + &quot;, b=&quot; + b}
 a=2
 a=3
 a=4
-b=2 
+b=2
 </code></pre>
-<pre><code>a=2, b=1 
-a=3, b=1 
-a=4, b=1 
-a=4, b=2 
-</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions !! When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).</p><h3>Assignment</h3><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
+<pre><code>a=2, b=1
+a=3, b=1
+a=4, b=1
+a=4, b=2
+</code></pre><p>Yep, you can write reactive expressions based on collections or arbitrary expressions @@ When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).</p><h3>Assignment</h3><p>Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.</p>
 <pre><code class="dollar"><br/>variableA = 1
 variableB = variableA
 variableA = 2
 
-=&gt; variableB == 1
+.: variableB == 1
 </code></pre><p>So as you can see when we use the <code>=</code> assignment operator we assign the <em>value</em> of the right hand side to the variable. Watch what happens when we use expressions.</p>
 <pre><code class="dollar"><br/>variableA = 1
 variableB = variableA
@@ -48,24 +48,24 @@ variableC = (variableA +1 )
 variableD := (variableA + 1)
 variableA = 2
 
-=&gt; variableB == 1
-=&gt; variableC == 2
-=&gt; variableD == 3
+.: variableB == 1
+.: variableC == 2
+.: variableD == 3
 
 </code></pre><p>It's important to note that all values in DollarScript are immutable - that means if you wish to change the value of a variable you <em>must</em> <strong>reassign</strong> a new value to the variable. For example <code>v++</code> would return the value of <code>v+1</code> it does not increment v. If however you want to assign a constant value, one that is both immutable and cannot be reassigned, just use the <code>const</code> modifier at the variable assignment (this does not make sense for declarations, so is only available on assignments).</p>
 <pre><code class="dollar">const MEDIUM = 23
-# MEDIUM= 4 would now produce an error
+// MEDIUM= 4 would now produce an error
 </code></pre><p>So <code>:=</code> supports the reactive behaviour of Dollar, i.e. it is a declaration not a value assignment, and <code>=</code> is used to nail down a particular value. Later we'll come across the value anchor operator or diamond <code>@</code> which instructs DollarScript to fix a value at the time of declaration. More on that later.</p><h3>Blocks</h3><p>DollarScript supports several block types, the first is the 'line block' a line block lies between <code>{</code> and <code>}</code> and is separated by either newlines or <code>;</code> characters.</p>
 <pre><code class="dollar"><br/>block := {
     &quot;Hello &quot;
     &quot;World&quot;
 }
 
-=&gt; block == &quot;World&quot;
+.: block == &quot;World&quot;
 
 block2 := {1;2;}
 
-=&gt; block2 == 2
+.: block2 == 2
 
 </code></pre><p>When a line block is evaluated the result is the value of the last entry. For advanced users note that all lines will be evaluated, the value is just ignored. A line block behaves a lot like a function in an imperative language.</p><p>Next we have the array block, the array block preserves all the values each part is seperated by either a <code>,</code> or a newline but is delimited by <code>[</code> and <code>]</code>.</p>
 <pre><code class="dollar"><br/>array := [
@@ -73,11 +73,11 @@ block2 := {1;2;}
     &quot;World&quot;
 ]
 
-=&gt; array == [&quot;Hello &quot;,&quot;World&quot;]
+.: array == [&quot;Hello &quot;,&quot;World&quot;]
 
 array2 := [1,2]
 
-=&gt; array2 == [1,2]
+.: array2 == [1,2]
 
 </code></pre><p>Finally we have the appending block, when an appending (or map) block is evaluated the result is the concatenation (using $plus() in the Dollar API) of the parts from top to bottom. The appending block starts and finishes with the <code>{</code> <code>}</code> braces, however each part is seperated by a <code>,</code> not a <code>;</code> or <em>newline</em></p>
 <pre><code class="dollar"><br/>appending := {
@@ -85,11 +85,11 @@ array2 := [1,2]
     &quot;World&quot;
 }
 
-=&gt; appending == &quot;Hello World&quot;
+.: appending == &quot;Hello World&quot;
 
 appending2 := { 1, 2}
 
-=&gt; appending2 == 3
+.: appending2 == 3
 
 </code></pre><p>Appending blocks can be combined with the pair <code>:</code> operator to create maps/JSON like this:</p>
 <pre><code class="dollar"><br/>appending := {
@@ -97,25 +97,28 @@ appending2 := { 1, 2}
    &quot;second&quot;:&quot;World&quot;
 }
 
-&gt;&gt; appending
+@@ appending
 
-=&gt; appending.second == &quot;World&quot;
+.: appending.second == &quot;World&quot;
 
-</code></pre><p>The stdout operator <code>&gt;&gt;</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
+</code></pre><p>The stdout operator <code>@@</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
 <pre><code class="dollar"><br/>pair1 := &quot;first&quot; : &quot;Hello &quot;;
 pair2 := &quot;second&quot; : &quot;World&quot;;
-  
-=&gt; pair1 + pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
- 
+
+.: pair1 + pair2 == {&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}
+
 </code></pre><h3>Lists</h3><p>DollarScript's lists are pretty similar to JavaScript arrays. They are defined using the <code>[1,2,3]</code> style syntax and accessed using the <code>x[y]</code> subscript syntax.</p>
-<pre><code class="dollar">=&gt; [1,2,3] + 4 == [1,2,3,4];
-=&gt; [1,2,3,4] - 4 == [1,2,3];
-=&gt; [] + 1 == [1] ;
-=&gt; [1] + [1] == [1,[1]];
-=&gt; [1] + 1 == [1,1];
+<pre><code class="dollar">.: [1,2,3] + 4 == [1,2,3,4];
+.: [1,2,3,4] - 4 == [1,2,3];
+.: [] + 1 == [1] ;
+.: [1] + [1] == [1,[1]];
+.: [1] + 1 == [1,1];
 
 [1,2,3][1] &lt;=&gt; 2
-</code></pre><p><em>Note we're introducing the assert equals or <code>&lt;=&gt;</code> operator here, this is a combination of <code>=&gt;</code> and <code>==</code> that will cause an error if the two values are not equal.</em></p><p>DollarScript maps are also associative arrays (like JavaScript) allowing you to request members from them using the array subscript syntax</p>
+
+</code></pre><p><em>Note we're using the assert equals or <code>&lt;=&gt;</code> operator here, this is a combination of <code>.:</code> and <code>==</code> that will cause an error if the two values are not equal.</em></p><p>You can count the size of the list using the size operator <code>#</code>.</p>
+<pre><code class="dollar">#[1,2,3,4] &lt;=&gt; 4
+</code></pre><p>DollarScript maps are also associative arrays (like JavaScript) allowing you to request members from them using the array subscript syntax</p>
 <pre><code class="dollar">{&quot;key1&quot;:1,&quot;key2&quot;:2} [&quot;key&quot;+1] &lt;=&gt; 1
 {&quot;key1&quot;:1,&quot;key2&quot;:2} [1] &lt;=&gt; {&quot;key2&quot;:2}
 {&quot;key1&quot;:1,&quot;key2&quot;:2} [1][&quot;key2&quot;] &lt;=&gt; 2
@@ -125,19 +128,19 @@ pair2 := &quot;second&quot; : &quot;World&quot;;
 
 </code></pre><h3>Error Handling</h3><p>Error handling couldn't be simpler. Define an error expression using the error keyword, the expression supplied will be evaluated on an error occurring within any sub scope of the scope in which it is defined. The special variables <code>msg</code> and <code>type</code> will be assigned values.</p>
 <pre><code class="dollar">errorHappened= false
-error { &gt;&gt; msg; errorHappened= true; }
+error { @@ msg; errorHappened= true; }
 a=1/0
-=&gt; errorHappened
+.: errorHappened
 </code></pre><h3>Types and Constraints</h3><p>Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, NUMBER, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the <code>is</code> operator:</p>
-<pre><code class="dollar">=&gt; &quot;Hello World&quot; is STRING
-=&gt; [&quot;Hello World&quot;] is LIST
+<pre><code class="dollar">.: &quot;Hello World&quot; is STRING
+.: [&quot;Hello World&quot;] is LIST
 </code></pre><p>Although there are no compile type constraints in DollarScript a runtime type system can be built using constraints. Constraints are declared at the time of variable assignment or declaration. A constraint once declared on a variable cannot be changed. The constraint is placed before the variable name at the time of declaration in parenthesis.</p>
 <pre><code class="dollar">(it &lt; 100) a = 50
 (it &gt; previous || previous is VOID) b = 5
 b=6
 b=7
 ( it is STRING) s=&quot;String value&quot;
-</code></pre><p>The special variables <code>it</code>, the current value and <code>previous</code>, the previous value, will be available for the constraint.</p><p>To build a simple type system simply declare (using <code>:=</code>) your type as a boolean expression.</p>
+</code></pre><p>The special variables <code>it</code> - the current value and <code>previous</code> - the previous value, will be available for the constraint.</p><p>To build a simple type system simply declare (using <code>:=</code>) your type as a boolean expression.</p>
 <pre><code class="dollar"><br/>//define a pseudo-type
 colorEnum := ( it in [&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;] )
 
@@ -145,31 +148,31 @@ colorEnum := ( it in [&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;] )
 //Use it as a constraint
 (colorEnum) myColor= &quot;green&quot;
 
-error { &gt;&gt; msg }
+error { @@ msg }
 
 //This fails
 myColor=&quot;apple&quot;
 
-</code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator. </p>
+</code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '=&gt;' or 'causes' operator.</p>
 <pre><code class="dollar"><br/>a=0
-a -&gt; { &gt;&gt; a } //alternatively for clarity &#39;a causes {&gt;&gt; a} &#39;
+a =&gt; { @@ a } //alternatively for clarity &#39;a causes {@@ a} &#39;
 
 a=1
 a=2
 a=3
 a=4
 a=2
- 
-</code></pre><p>When the code is executed we'll see the values 1,2,3,4,2 printed out, this is because whenever <code>a</code> changes the block <code>{ &gt;&gt; a }</code> is evaluated, resulting in the variable <code>a</code> being printed to stdout. Imagine how useful that is for debugging changes to a variable!</p><p>Next we have the 'when' operator, there is no shorthand for this operator, to help keep you code readable:</p>
+
+</code></pre><p>When the code is executed we'll see the values 1,2,3,4,2 printed out, this is because whenever <code>a</code> changes the block <code>{ @@ a }</code> is evaluated, resulting in the variable <code>a</code> being printed to stdout. Imagine how useful that is for debugging changes to a variable!</p><p>Next we have the 'when' operator, there is no shorthand for this operator, to help keep you code readable:</p>
 <pre><code class="dollar"><br/>a=1
- 
-when a == 2 { &gt;&gt; a }
+
+when a == 2 { @@ a }
 
 a=2
 a=3
 a=4
 a=2
- 
+
 </code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>a == 2</code>) becomes true.</p><h2>Imperative Control Flow</h2><h3>If</h3><p>DollarScript supports the usual imperative control flow but, unlike some languages, everything is an operator. This is the general rule of DollarScript, everything has a value. DollarScript does not have the concept of statements and expressions, just expressions. This means that you can use control flow in an expression.</p>
 <pre><code class="dollar"><br/>a=1
 b= if a==1 2 else 3
@@ -179,11 +182,11 @@ b &lt;=&gt; 2
 <pre><code class="dollar"><br/>a=5
 //Parenthesis added for clarity, not required.
 b= if (a == 1) &quot;one&quot; else if (a == 2) &quot;two&quot; else &quot;more than two&quot;
-=&gt; b == &quot;more than two&quot;
+.: b == &quot;more than two&quot;
 
 </code></pre><h3>For</h3>
 <pre><code class="dollar"><br/>for i in 1..10 {
-    &gt;&gt; i
+    @@ i
 }
 
 </code></pre><h2>Parameters &amp; Functions</h2><p>In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize <em>anything</em>. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.</p>
@@ -193,7 +196,7 @@ b= if (a == 1) &quot;one&quot; else if (a == 2) &quot;two&quot; else &quot;more 
 <pre><code class="dollar"><br/>testParams := ($2 + &quot; &quot; + $1)
 testParams (&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
 
-</code></pre><p>Yep we built a function just by naming an expression. You can name anything and parameterise it - including maps, lists, blocks and plain old expressions. </p><p>What about named parameters, that would be nice.</p>
+</code></pre><p>Yep we built a function just by naming an expression. You can name anything and parameterise it - including maps, lists, blocks and plain old expressions.</p><p>What about named parameters, that would be nice.</p>
 <pre><code class="dollar">testParams := (last + &quot; &quot; + first)
 testParams(first:&quot;Hello&quot;, last:&quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
 </code></pre><p>Yep you can use named parameters, then refer to the values by the names passed in.</p><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built using the <code>uri</code> operator</p>
@@ -201,8 +204,8 @@ testParams(first:&quot;Hello&quot;, last:&quot;World&quot;) &lt;=&gt; &quot;Worl
 
 dynamicURI= uri &quot;camel:http://google.com?q=&quot;+search
 
-marinaVideos = &lt;+ camel:https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
-&gt;&gt; marinaVideos.results map { $1.trackViewUrl }
+marinaVideos = &lt;&lt; camel:https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
+@@ marinaVideos.results map { $1.trackViewUrl }
 
 </code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><p>``</p><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
 <pre><code class="dollar"><br/>variableA=&quot;Hello World&quot;
@@ -212,14 +215,14 @@ java = `out=scope.get(&quot;variableA&quot;);`
 java &lt;=&gt; &quot;Hello World&quot;
 
 </code></pre><p>A whole bunch of imports are done for you automatically (java.util.*, java.math.*) but you will have to fully qualify any thirdparty libs. The return type will be of type <code>var</code> and is stored in the variable <code>out</code>. The Java snippet also has access to the scope (me.neilellis.dollar.script.Scope) object on which you can get and set DollarScript variables.</p><p>Reactive behaviour is supported on the Scope object with the listen and notify methods on variables. You'll need to then built your reactivity around those variables or on the <code>out</code> object directly (that's a pretty advanced topic).</p><h2>Operators</h2><h3>Iterative Operators</h3><h3>Comparison Operators</h3><h3>Numerical Operators</h3><p>DollarScript support the basic numerical operators +,-,/,*,%</p><h3>Logical Operators</h3><p>DollarScript support the basic logical operators &amp;&amp;,||,! as well as the truthy operator <code>~</code></p><p>The truthy operator converts any value to a boolean by applying the rule that: void is false, 0 is false, "" is false, empty list is false, empty map is false - all else is true.</p>
-<pre><code class="dollar"><br/>=&gt; ~ [1,2,3]
-=&gt; ! ~ []
-=&gt; ~ &quot;anything&quot;
-=&gt; ! ~ &quot;&quot;
-=&gt; ~ 1
-=&gt; ! ~ 0
-=&gt; ! ~ {void}
-=&gt;  ~ {&quot;a&quot; : 1}
-=&gt; ! ~ void
+<pre><code class="dollar"><br/>.: ~ [1,2,3]
+.: ! ~ []
+.: ~ &quot;anything&quot;
+.: ! ~ &quot;&quot;
+.: ~ 1
+.: ! ~ 0
+.: ! ~ {void}
+.:  ~ {&quot;a&quot; : 1}
+.: ! ~ void
 
-</code></pre><h3>Pipe Operators</h3><h3>Remaining Operators</h3><h2>Modules &amp; Module Locators</h2><h2>Advanced Yopics</h2><h3>Concurrency &amp; Threads</h3>
+</code></pre><h3>Pipe Operators</h3><h3>Remaining Operators</h3><h2>Imports &amp; Modules</h2><h3>Import</h3><h3>Module Locators</h3><h3>UModules</h3><h2>Builtin Functions</h2><h2>Advanced Topics</h2><h3>Concurrency &amp; Threads</h3>
