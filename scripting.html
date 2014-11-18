@@ -153,6 +153,8 @@ error { @@ msg }
 //This fails
 myColor=&quot;apple&quot;
 
+</code></pre><p>Of course since the use of <code>(it is XXXX)</code> is very common DollarScript provides a specific runtime type constraint that can be added in conjunction with other constraints. Simply prefix the assignment or decleration with <code>&lt;XXXX&gt;</code> where XXXX is the runtime type.</p>
+<pre><code class="dollar">&lt;string&gt; s=&quot;String value&quot;
 </code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '=&gt;' or 'causes' operator.</p>
 <pre><code class="dollar"><br/>a=0
 a =&gt; { @@ a } //alternatively for clarity &#39;a causes {@@ a} &#39;
