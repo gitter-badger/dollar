@@ -238,15 +238,14 @@ testParams (&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&qu
 </code></pre><p>Yep we built a function just by naming an expression. You can name anything and parameterise it - including maps, lists, blocks and plain old expressions.</p><p>What about named parameters, that would be nice.</p>
 <pre><code class="dollar">testParams := (last + &quot; &quot; + first)
 testParams(first:&quot;Hello&quot;, last:&quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
-</code></pre><p>Yep you can use named parameters, then refer to the values by the names passed in.</p><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built using the <code>uri</code> operator</p>
-<pre><code class="dollar"><br/><br/>search=&quot;Unikitty&quot;
+</code></pre><p>Yep you can use named parameters, then refer to the values by the names passed in.</p><h2>Resources &amp; URIs</h2><p>URIs are first class citizen's in DollarScript. They refer to a an arbitrary resource, usually remote, that can be accessed using the specified protocol and location. Static URIs can be referred to directly without quotation marks, dynamic URIs can be built by casting to a uri using the <code>as</code> operator.</p>
+<pre><code class="dollar">search=&quot;Unikitty&quot;
 
 dynamicURI= (&quot;camel:http://google.com?q=&quot;+search) as uri
 
 marinaVideos = &lt;&lt; camel:https://itunes.apple.com/search?term=Marina+And+The+Diamonds&amp;entity=musicVideo
 @@ marinaVideos.results each { $1.trackViewUrl }
-
-</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><p>``</p><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
+</code></pre><p>In this example we've requested a single value (using <code>&lt;+</code>) from a uri and assigned the value to <code>marinaVideos</code> then we simply iterate over the results using <code>each</code> and each value (passed in to the scope as <code>$1</code>) we extract the <code>trackViewUrl</code>. The each operator returns a list of the results and that is what is passed to standard out.</p><h2>Using Java</h2><p>Hopefully you'll find DollarScript a useful and productive language, but there will be many times when you just want to quickly nip out to a bit of Java. To do so, just surround the Java in backticks.</p>
 <pre><code class="dollar"><br/>variableA=&quot;Hello World&quot;
 
 java = `out=scope.get(&quot;variableA&quot;);`
