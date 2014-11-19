@@ -192,27 +192,7 @@ true as VOID &lt;=&gt; void
 {&quot;a&quot;:1,&quot;b&quot;:2} as list &lt;=&gt; [&quot;a&quot;:1,&quot;b&quot;:2]
 {&quot;a&quot;:1,&quot;b&quot;:2} as boolean &lt;=&gt; true
 {&quot;a&quot;:1,&quot;b&quot;:2} as VOID &lt;=&gt; void
-</code></pre><h2>Reactive Control Flow</h2><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '=&gt;' or 'causes' operator.</p>
-<pre><code class="dollar"><br/>a=0
-a =&gt; { @@ a } //alternatively for clarity &#39;a causes {@@ a} &#39;
-
-a=1
-a=2
-a=3
-a=4
-a=2
-
-</code></pre><p>When the code is executed we'll see the values 1,2,3,4,2 printed out, this is because whenever <code>a</code> changes the block <code>{ @@ a }</code> is evaluated, resulting in the variable <code>a</code> being printed to stdout. Imagine how useful that is for debugging changes to a variable!</p><p>Next we have the 'when' operator, there is no shorthand for this operator, to help keep you code readable:</p>
-<pre><code class="dollar"><br/>a=1
-
-when a == 2 { @@ a }
-
-a=2
-a=3
-a=4
-a=2
-
-</code></pre><p>This time we'll just see the number 2 twice, this is because the <code>when</code> operator triggers the evaluation of the supplied block ONLY when the supplied expression (<code>a == 2</code>) becomes true.</p><h2>Imperative Control Flow</h2><h3>If</h3><p>DollarScript supports the usual imperative control flow but, unlike some languages, everything is an operator. This is the general rule of DollarScript, everything has a value. DollarScript does not have the concept of statements and expressions, just expressions. This means that you can use control flow in an expression.</p>
+</code></pre><h2>Imperative Control Flow</h2><p>With imperative control flow, the control flow operations are only triggered when the block they are contained within is evaluated. I.e. they behave like control flow in imperative languages. So start with these if you're just learning DollarScript.</p><h3>If</h3><p>DollarScript supports the usual imperative control flow but, unlike some languages, everything is an operator. This is the general rule of DollarScript, everything has a value. DollarScript does not have the concept of statements and expressions, just expressions. This means that you can use control flow in an expression.</p>
 <pre><code class="dollar"><br/>a=1
 b= if a==1 2 else 3
 b &lt;=&gt; 2
@@ -227,6 +207,71 @@ b= if (a == 1) &quot;one&quot; else if (a == 2) &quot;two&quot; else &quot;more 
 <pre><code class="dollar"><br/>for i in 1..10 {
     @@ i
 }
+
+</code></pre><h3>While</h3>
+<pre><code class="dollar">a= 1
+while a &lt; 10 {
+ a= a+1
+}
+a &lt;=&gt; 10
+
+</code></pre><h2>Reactive Control Flow</h2><h3>Causes</h3><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator.</p>
+<pre><code class="dollar">a=1
+b=1
+a -&gt; (b= a)
+
+//Note the use of the fix operator &amp; otherwise we are saying a is always equal to 1
+
+&amp;a &lt;=&gt; 1
+&amp;b &lt;=&gt; 1
+
+a=2
+
+&amp;a &lt;=&gt; 2
+&amp;b &lt;=&gt; 2
+</code></pre><p>Okay so reactive programming can melt your head a little. So let's go through the example step by step.</p><p>Firstly we assign fixed values to <code>a</code> and <code>b</code>, we then say that when <code>a</code> changes the action we should take is to assign it's value to <code>b</code>. Okay now we check to see if the current value of <code>a</code> is equal to 1, we use the fix operator <code>&amp;</code> here to say that we are only interested in the current value. Because <code>&lt;=&gt;</code> is a reactive operator if we didn't use the fix operator then <code>a &lt;=&gt; 1</code> would mean a is always 1. When we add the fix operator it fixes the value of a to the value at this point in the code.</p><p>We then do the same with b to see if it is 1.</p><p>Next we assign a new value of 2 to <code>a</code>. This will immediately (within the same thread) trigger the reactive <code>-&gt;</code> operator which is triggered by changes to <code>a</code>. The trigger assigns the value of <code>a</code> to <code>b</code>, so <code>b</code> is now the same as <code>a</code>. The assertions at the end confirm this.</p><h3>When</h3><p>Next we have the 'when' operator which can be specified as a statement, usually for longer pieces of code. Or as the <code>=&gt;</code> operator, for concise code.</p>
+<pre><code class="dollar"><br/>c=1
+d=1
+
+//When c is greater than 3 assign it&#39;s value to d
+c &gt; 3 =&gt; (d= c)
+
+&amp;c &lt;=&gt; 1
+&amp;d &lt;=&gt; 1
+c=2
+&amp;c &lt;=&gt; 2
+&amp;d &lt;=&gt; 1
+c=5
+&amp;c &lt;=&gt; 5
+&amp;d &lt;=&gt; 5
+
+</code></pre><p>This is similar to the previous example except that we have to set a value greater than 3 for the action to be taken.</p><h3>Collect</h3><p>The <code>collect</code> operator listens for changes in the supplied expression adding all the values to a list until the <code>until</code> clause is triggered. It then evaluates the second expression with the values <code>it</code> for the current value, <code>count</code> for the number of messages collected since last emission and <code>collected</code> for the collected values. The whole operator itself emits <code>void</code> unless the collection emission is triggered in which case it emits the collection itself. Values can be skipped with an <code>unless</code> clause. Skipped messages increase the count value, so use <code>#collected</code> if you want the number of collected values.</p>
+<pre><code class="dollar">e=void
+
+//Length should always be five unless void
+(#it == 5 || it is VOID) collectedValues=void
+
+//count starts at 0 so this means five to collect
+collect e until count == 4 {
+    print count
+    print collected
+    collectedValues= collected
+}
+
+e=1
+e=2
+e=3
+e=4
+e=5
+&amp;collectedValues &lt;=&gt; [1,2,3,4,5]
+e=6
+e=7
+e=8
+e=9
+e=10
+&amp;collectedValues &lt;=&gt; [6,7,8,9,10]
+e=11
+e=12
 
 </code></pre><h2>Parameters &amp; Functions</h2><p>In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize <em>anything</em>. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.</p>
 <pre><code class="dollar">($2 + &quot; &quot; + $1)(&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
