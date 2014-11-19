@@ -245,33 +245,25 @@ c=5
 &amp;c &lt;=&gt; 5
 &amp;d &lt;=&gt; 5
 
-</code></pre><p>This is similar to the previous example except that we have to set a value greater than 3 for the action to be taken.</p><h3>Collect</h3><p>The <code>collect</code> operator listens for changes in the supplied expression adding all the values to a list until the <code>until</code> clause is triggered. It then evaluates the second expression with the values <code>it</code> for the current value, <code>count</code> for the number of messages collected since last emission and <code>collected</code> for the collected values. The whole operator itself emits <code>void</code> unless the collection emission is triggered in which case it emits the collection itself. Values can be skipped with an <code>unless</code> clause. Skipped messages increase the count value, so use <code>#collected</code> if you want the number of collected values.</p>
-<pre><code class="dollar">e=void
+</code></pre><p>This is similar to the previous example except that we have to set a value greater than 3 for the action to be taken.</p><h3>Collect</h3><p>The <code>collect</code> operator listens for changes in the supplied expression adding all the values to a list until the <code>until</code> clause is triggered. It then evaluates the second expression with the values <code>it</code> for the current value, <code>count</code> for the number of messages <strong>received</strong> since last emission and <code>collected</code> for the collected values. The whole operator itself emits <code>void</code> unless the collection operation is triggered in which case it emits the collection itself. Values can be skipped with an <code>unless</code> clause. Skipped messages increase the count value, so use <code>#collected</code> if you want the number of collected values.</p>
+<pre><code class="dollar"><br/>e=void
 
-//Length should always be five unless void
-(#it == 5 || it is VOID) collectedValues=void
+//Length is greater than or equal to 4 unless void
+(#it &gt;= 4 || it is VOID) collectedValues=void
 
-//count starts at 0 so this means five to collect
-collect e until count == 4 {
+//count starts at 0 so this means five to collect (except if it contains the value 10)
+collect e until count == 4 unless it == 10{
     print count
     print collected
     collectedValues= collected
 }
 
-e=1
-e=2
-e=3
-e=4
-e=5
+e=1; e=2; e=3; e=4; e=5; e=6
 &amp;collectedValues &lt;=&gt; [1,2,3,4,5]
-e=6
-e=7
-e=8
-e=9
-e=10
-&amp;collectedValues &lt;=&gt; [6,7,8,9,10]
-e=11
-e=12
+e=7; e=8; e=9; e=10
+&amp;collectedValues &lt;=&gt; [6,7,8,9]
+e=11; e=12; e=13; e=14; e=15; e=16
+&amp;collectedValues &lt;=&gt; [11,12,13,14,15]
 
 </code></pre><h2>Parameters &amp; Functions</h2><p>In most programming languages you have the concept of functions and parameters, i.e. you can parametrized blocks of code. In DollarScript you can parameterize <em>anything</em>. For example let's just take a simple expression that adds two strings together, in reverse order, and pass in two parameters.</p>
 <pre><code class="dollar">($2 + &quot; &quot; + $1)(&quot;Hello&quot;, &quot;World&quot;) &lt;=&gt; &quot;World Hello&quot;
