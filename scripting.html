@@ -11,9 +11,9 @@ variableB := variableA
 variableA := 2
 
 .: variableB == 2
-</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>.:</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the =&gt; or causes operator :</p>
+</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>.:</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the -&gt; or causes operator :</p>
 <pre><code class="dollar"><br/>a=1
-a =&gt; { @@ $1 }
+a -&gt; { @@ $1 }
 a=2
 a=3
 a=4
@@ -25,7 +25,7 @@ a=4
 </code></pre><p>That simple piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
 <pre><code class="dollar"><br/>b=1
 a=1
-a + b + 1 =&gt; { @@ &quot;a=&quot; + a + &quot;, b=&quot; + b}
+a + b + 1 -&gt; { @@ &quot;a=&quot; + a + &quot;, b=&quot; + b}
 a=2
 a=3
 a=4
@@ -235,7 +235,11 @@ c &gt; 3 =&gt; (d= c)
 c=2; &amp;c &lt;=&gt; 2; &amp;d &lt;=&gt; 1
 c=5 ; &amp;c &lt;=&gt; 5 ; &amp;d &lt;=&gt; 5
 
-</code></pre><p>This is similar to the previous example except that we have to set a value greater than 3 for the action to be taken.</p><h3>Collect</h3><p>The <code>collect</code> operator listens for changes in the supplied expression adding all the values to a list until the <code>until</code> clause is triggered. It then evaluates the second expression with the values <code>it</code> for the current value, <code>count</code> for the number of messages <strong>received</strong> since last emission and <code>collected</code> for the collected values. The whole operator itself emits <code>void</code> unless the collection operation is triggered in which case it emits the collection itself. Values can be skipped with an <code>unless</code> clause. Skipped messages increase the count value, so use <code>#collected</code> if you want the number of collected values.</p>
+</code></pre><p>This is similar to the previous example except that we have to set a value greater than 3 for the action to be taken.</p>
+<pre><code class="dollar">//Note alternative syntax is when &lt;condition&gt; &lt;expression&gt;
+c=1
+when c &gt; 3 { @@ c}
+</code></pre><h3>Collect</h3><p>The <code>collect</code> operator listens for changes in the supplied expression adding all the values to a list until the <code>until</code> clause is triggered. It then evaluates the second expression with the values <code>it</code> for the current value, <code>count</code> for the number of messages <strong>received</strong> since last emission and <code>collected</code> for the collected values. The whole operator itself emits <code>void</code> unless the collection operation is triggered in which case it emits the collection itself. Values can be skipped with an <code>unless</code> clause. Skipped messages increase the count value, so use <code>#collected</code> if you want the number of collected values.</p>
 <pre><code class="dollar"><br/>e=void
 
 //Length is greater than or equal to 4 unless void
