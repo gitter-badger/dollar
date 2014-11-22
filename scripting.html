@@ -304,4 +304,23 @@ password=whatsupdoc
 </code></pre><p>The GitHub resolver will checkout the specified repository and store it under <code>~/.dollar/repo/&lt;username&gt;/&lt;repo-name&gt;/&lt;branch&gt;</code> all further interaction with the module will then be done from the checked out version. If you already have a version checked out a git pull will be done to update the branch.</p>
 <pre><code class="dollar">hello := module &quot;github:neilellis:dollar-example-module:0.1.0:branch.ds&quot;
 @@ hello
-</code></pre><h3>Module Locators</h3><h3>Writing Modules</h3><h2>Builtin Functions</h2><h2>Advanced Topics</h2><h3>Concurrency &amp; Threads</h3>
+</code></pre><h3>Module Locators</h3><h3>Writing Modules</h3><p>Modules consist of a file called module.json with the name of the main script for the module and an optional array of Maven style java dependencies. And then one or more DollarScript files.</p>
+<pre><code>{
+&quot;main&quot;:&quot;chat.ds&quot;,
+&quot;dependencies&quot;:[&quot;org.twitter4j:twitter4j-core:4.0.2&quot;]
+}
+</code></pre><p>The DollarScript files should use the export modifier on assignments that it wishes to make available to client applications and it can refer to variables that don't exist, in which case values for those variables will need to be passed as parameters to the module declaration in the client application.</p>
+<pre><code class="dollar">redis= (&quot;redis://localhost:6379/&quot; + ${channel | &quot;test&quot;}) as URI
+www= ((&quot;http:get://127.0.0.1:8111/&quot; + ${channel | &quot;test&quot;}) as URI)
+
+export server := {
+           www subscribe {
+            $1.params +&gt; redis
+            { body :  all redis }
+        }
+    };
+
+export stop := {stop(www);stop(redis); @@ [state(www),state(redis)];}
+
+export state:= [state(www),state(redis)]
+</code></pre><h2>Builtin Functions</h2><h2>Advanced Topics</h2><h3>Concurrency &amp; Threads</h3>
