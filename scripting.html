@@ -11,9 +11,9 @@ variableB := variableA
 variableA := 2
 
 .: variableB == 2
-</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>.:</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the -&gt; or causes operator :</p>
+</code></pre><p>In the above example we are declaring (using the declarative operator <code>:=</code>) that variableA is current the value 1, we then declare that variableB is the <em>same as</em> variableA. So when we change variableA to 2 we also change variableB to 2.</p><p>The assertion operator <code>.:</code> will throw an assertion error if the value following is either non boolean or not true.</p><p>Now let's throw in the -&gt;? or causes operator :</p>
 <pre><code class="dollar"><br/>a=1
-a -&gt; { @@ $1 }
+a -&gt;? { @@ $1 }
 a=2
 a=3
 a=4
@@ -25,7 +25,7 @@ a=4
 </code></pre><p>That simple piece of code will simply output each change made to the variable a, but wait a minute what about ...</p>
 <pre><code class="dollar"><br/>b=1
 a=1
-a + b + 1 -&gt; { @@ &quot;a=&quot; + a + &quot;, b=&quot; + b}
+a + b + 1 -&gt;? { @@ &quot;a=&quot; + a + &quot;, b=&quot; + b}
 a=2
 a=3
 a=4
@@ -63,7 +63,7 @@ variableA = 2
 
 .: block == &quot;World&quot;
 
-block2 := {1;2;}
+block2 := {1;2}
 
 .: block2 == 2
 
@@ -79,29 +79,29 @@ list2 := [1,2]
 
 .: list2 == [1,2]
 
-</code></pre><h4>Appending / Map Block</h4><p>Finally we have the appending block, when an appending (or map) block is evaluated the result is the concatenation (using $plus() in the Dollar API) of the parts from top to bottom. The appending block starts and finishes with the <code>{</code> <code>}</code> braces, however each part is seperated by a <code>,</code> not a <code>;</code> or <em>newline</em></p>
-<pre><code class="dollar"><br/>appending := {
-    &quot;Hello &quot;,
+</code></pre><h4>Map Block</h4><p>Finally we have the map block, when an map block is evaluated the result is the aggregation of the parts from top to bottom into a map. The map block starts and finishes with the <code>{</code> <code>}</code> braces, however each part is seperated by a <code>,</code> not a <code>;</code> or <em>newline</em></p>
+<pre><code class="dollar"><br/>mapBlock := {
+    &quot;Hello&quot;,
     &quot;World&quot;
 }
 
-.: appending == &quot;Hello World&quot;
+mapBlock &lt;=&gt; {&quot;Hello&quot;:&quot;Hello&quot;, &quot;World&quot;:&quot;World&quot;}
 
-appending2 := { 1, 2}
+mapBlock2 := { 1, 2}
 
-.: appending2 == 3
+mapBlock2 &lt;=&gt; {&quot;1&quot;:1,&quot;2&quot;:2}
 
-</code></pre><p>Appending blocks can be combined with the pair <code>:</code> operator to create maps/JSON like this:</p>
-<pre><code class="dollar"><br/>appending := {
+</code></pre><p>Map blocks can be combined with the pair <code>:</code> operator to create maps/JSON like this:</p>
+<pre><code class="dollar"><br/>mapBlock := {
     &quot;first&quot;:&quot;Hello &quot;,
    &quot;second&quot;:&quot;World&quot;
 }
 
-@@ appending
+@@ mapBlock
 
-.: appending.second == &quot;World&quot;
+.: mapBlock.second == &quot;World&quot;
 
-</code></pre><p>The stdout operator <code>@@</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. This works because of how appending works with pairs, i.e. they are joined together to form a map.</p>
+</code></pre><p>The stdout operator <code>@@</code> is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output <code>{&quot;first&quot;:&quot;Hello &quot;,&quot;second&quot;:&quot;World&quot;}</code> a JSON object created using JSON like syntax. Maps can also be created by joining pairs.</p>
 <pre><code class="dollar"><br/>pair1 := &quot;first&quot; : &quot;Hello &quot;;
 pair2 := &quot;second&quot; : &quot;World&quot;;
 
@@ -128,7 +128,7 @@ pair2 := &quot;second&quot; : &quot;World&quot;;
 
 </code></pre><h3>Error Handling</h3><p>Error handling couldn't be simpler. Define an error expression using the error keyword, the expression supplied will be evaluated on an error occurring within any sub scope of the scope in which it is defined. The special variables <code>msg</code> and <code>type</code> will be assigned values.</p>
 <pre><code class="dollar">errorHappened= false
-error { @@ msg; errorHappened= true; }
+error { @@ msg; errorHappened= true }
 a=1/0
 .: errorHappened
 </code></pre><h2>Type System</h2><h3>Types</h3><p>Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, NUMBER, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the <code>is</code> operator:</p>
@@ -164,9 +164,9 @@ s &lt;=&gt; &quot;1&quot;
 1 as list &lt;=&gt; [1]
 1 as map &lt;=&gt; {&quot;value&quot;:1}
 1 as VOID &lt;=&gt; void
-1 as number &lt;=&gt; 1
+1 as integer &lt;=&gt; 1
 
-&quot;1&quot; as number &lt;=&gt; 1
+&quot;1&quot; as integer &lt;=&gt; 1
 &quot;http://google.com&quot; as uri
 &quot;1&quot; as VOID &lt;=&gt; void
 &quot;true&quot; as boolean &lt;=&gt; true
@@ -176,7 +176,7 @@ s &lt;=&gt; &quot;1&quot;
 &quot;1&quot; as string &lt;=&gt; &quot;1&quot;
 
 true as string &lt;=&gt; &quot;true&quot;
-true as number &lt;=&gt; 1
+true as integer &lt;=&gt; 1
 true as list &lt;=&gt; [true]
 true as map &lt;=&gt; {&quot;value&quot;:true}
 true as boolean &lt;=&gt; true
@@ -215,21 +215,21 @@ while a &lt; 10 {
 }
 a &lt;=&gt; 10
 
-</code></pre><h2>Reactive Control Flow</h2><h3>Causes</h3><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;' or 'causes' operator.</p>
+</code></pre><h2>Reactive Control Flow</h2><h3>Causes</h3><p>DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.</p><p>Let's start with the simplest reactive control flow operator, the '-&gt;?' or 'causes' operator.</p>
 <pre><code class="dollar">a=1; b=1
 
-a -&gt; (b= a)
+a -&gt;? (b= a)
 
 &amp;a &lt;=&gt; 1 ; &amp;b &lt;=&gt; 1
 
 a=2 ; &amp;a &lt;=&gt; 2 ; &amp;b &lt;=&gt; 2
 
-</code></pre><p>Okay so reactive programming can melt your head a little. So let's go through the example step by step.</p><p>Firstly we assign fixed values to <code>a</code> and <code>b</code>, we then say that when <code>a</code> changes the action we should take is to assign it's value to <code>b</code>. Okay now we check to see if the current value of <code>a</code> is equal to 1, we use the fix operator <code>&amp;</code> here to say that we are only interested in the current value. Because <code>&lt;=&gt;</code> is a reactive operator if we didn't use the fix operator then <code>a &lt;=&gt; 1</code> would mean a is always 1. When we add the fix operator it fixes the value of a to the value at this point in the code.</p><p>We then do the same with b to see if it is 1.</p><p>Next we assign a new value of 2 to <code>a</code>. This will immediately (within the same thread) trigger the reactive <code>-&gt;</code> operator which is triggered by changes to <code>a</code>. The trigger assigns the value of <code>a</code> to <code>b</code>, so <code>b</code> is now the same as <code>a</code>. The assertions at the end confirm this.</p><h3>When</h3><p>Next we have the 'when' operator which can be specified as a statement, usually for longer pieces of code. Or as the <code>=&gt;</code> operator, for concise code.</p>
+</code></pre><p>Okay so reactive programming can melt your head a little. So let's go through the example step by step.</p><p>Firstly we assign fixed values to <code>a</code> and <code>b</code>, we then say that when <code>a</code> changes the action we should take is to assign it's value to <code>b</code>. Okay now we check to see if the current value of <code>a</code> is equal to 1, we use the fix operator <code>&amp;</code> here to say that we are only interested in the current value. Because <code>&lt;=&gt;</code> is a reactive operator if we didn't use the fix operator then <code>a &lt;=&gt; 1</code> would mean a is always 1. When we add the fix operator it fixes the value of a to the value at this point in the code.</p><p>We then do the same with b to see if it is 1.</p><p>Next we assign a new value of 2 to <code>a</code>. This will immediately (within the same thread) trigger the reactive <code>-&gt;</code> operator which is triggered by changes to <code>a</code>. The trigger assigns the value of <code>a</code> to <code>b</code>, so <code>b</code> is now the same as <code>a</code>. The assertions at the end confirm this.</p><h3>When</h3><p>Next we have the 'when' operator which can be specified as a statement, usually for longer pieces of code. Or as the <code>?</code> operator, for concise code.</p>
 <pre><code class="dollar"><br/>c=1
 d=1
 
 //When c is greater than 3 assign it&#39;s value to d
-c &gt; 3 =&gt; (d= c)
+c &gt; 3 ? (d= c)
 
 &amp;c &lt;=&gt; 1; &amp;d &lt;=&gt; 1
 c=2; &amp;c &lt;=&gt; 2; &amp;d &lt;=&gt; 1
@@ -320,7 +320,7 @@ export server := {
         }
     };
 
-export stop := {stop(www);stop(redis); @@ [state(www),state(redis)];}
+export stop := {stop(www);stop(redis); @@ [state(www),state(redis)]}
 
 export state:= [state(www),state(redis)]
-</code></pre><h2>Builtin Functions</h2><h2>Advanced Topics</h2><h3>Concurrency &amp; Threads</h3>
+</code></pre><h2>Builtin Functions</h2><h2>Concurrency &amp; Threads</h2><h3>Concurrent Scope</h3><p>The concurrent scope operator <code>(p)</code> or <code>parallel</code> creates a new scope in which all actions that can be parallel will be, it's partner the serial operator <code>(s)</code> or <code>serial</code></p><p>Notes:</p><p>All types are immutable, including collections. Cannot reassign a variable from a different thread, so readonly from other threads.ç</p><h2>Advanced Topics</h2>
