@@ -1,0 +1,12 @@
+# Site settings
+title: Dollar
+email: hello@neilellis.me
+description: > # this means to ignore newlines until "baseurl:"
+  DollarScript and the DollarAPI - getting things done on the JVM.
+baseurl: "/dollar/" # the subpath of your site, e.g. /blog/
+url: "http://neilellis.github.io/" # the base hostname & protocol for your site
+twitter_username: neilellis
+github_username:  neilellis
+
+# Build settings
+markdown: kramdown

@@ -44,7 +44,7 @@ DollarScript has it's own peculiarities, mostly these exists to help with it's m
 
 ###Reactive Programming
 
-DollarScript expressions are by default *lazy*, this is really important to understand otherwise you may get some surprises. This lazy evaluation makes DollarScript a [reactive programming language](http://en.wikipedia.org/wiki/Reactive_programming) by default.
+DollarScript expressions are by default *lazy*, this is really important to understand otherwise you may get some surprises. This lazy evaluation is combined with a simple event system to make DollarScript a [reactive programming language](http://en.wikipedia.org/wiki/Reactive_programming) by default.
 
 
 Let's see some of that behaviour in action:
@@ -63,12 +63,12 @@ In the above example we are declaring (using the declarative operator `:=`) that
 The assertion operator `.:` will throw an assertion error if the value following is either non boolean or not true.
 
 
-Now let's throw in the ->? or causes operator :
+Now let's throw in the causes operator :
 
 ```dollar
 
 a=1
-a ->? { @@ $1 }
+a causes { @@ $1 }
 a=2
 a=3
 a=4
@@ -87,7 +87,7 @@ That simple piece of code will simply output each change made to the variable a,
 
 b=1
 a=1
-a + b + 1 ->? { @@ "a=" + a + ", b=" + b}
+a + b + 1 causes { @@ "a=" + a + ", b=" + b}
 a=2
 a=3
 a=4
@@ -101,12 +101,30 @@ a=4, b=1
 a=4, b=2
 ~~~
 
-Yep, you can write reactive expressions based on collections or arbitrary expressions @@ When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).
+Yep, you can write reactive expressions based on collections or arbitrary expressions. When any component changes the right hand side is re-evaluated (the actual value that changed is passed in as $1).
+
+But it's even simpler than that, many of DollarScripts operators are reactive themselves. That means they understand changes to their values. Take `@@` (or `print`) as an example:
+
+```dollar
+b=1
+@@b
+b=2
+```
+
+Outputs 1 then 2 because @@ heard the change to b and re output the new value. Often this is what you want, however if you don't just add the fix operator `&` before the value. That will stop reactive behaviour.
+
+```dollar
+b=1
+@@ &b
+b=2
+```
+
+
 
 
 ###Assignment
 
-Obviously the declarative/reactive behavior is fantastic for templating and creating lambda style expressions, however a lot of the time we want to simply assign a value.
+Obviously the declarative/reactive behavior is fantastic for templating, eventing, creating lambda style expressions etc. however a lot of the time we want to simply assign a value and perform a single action on that value.
 
 ```dollar
 
@@ -134,6 +152,18 @@ variableA = 2
 
 ```
 
+The assignment operator `=` has a 'fix' depth of 1. This means that any expression will be evaluated, but no maps or line blocks will be. It is also not reactive. A fix depth of 2 causes all expressions to be evaluated and evaluates one depth of maps or line blocks.
+
+```dollar
+
+lamdaVar = {$1 + 10}
+lamdaVar(5) <=> 15
+
+```
+
+The assert equals operator `<=>` will compare two values and throw an exception if they are not the same.
+
+
 It's important to note that all values in DollarScript are immutable - that means if you wish to change the value of a variable you *must* __reassign__ a new value to the variable. For example `v++` would return the value of `v+1` it does not increment v. If however you want to assign a constant value, one that is both immutable and cannot be reassigned, just use the `const` modifier at the variable assignment (this does not make sense for declarations, so is only available on assignments).
 
 ```dollar
@@ -141,24 +171,25 @@ const MEDIUM = 23
 // MEDIUM= 4 would now produce an error
 ```
 
-So `:=` supports the reactive behaviour of Dollar, i.e. it is a declaration not a value assignment, and `=` is used to nail down a particular value. Later we'll come across the value anchor operator or diamond `&` which instructs DollarScript to fix a value at the time of declaration. More on that later.
+So `:=` supports the full reactive behaviour of Dollar, i.e. it is a declaration not a value assignment, and `=` is used to nail down a particular value or reduce the reactive behaviour. Later we'll come across the fix operator `&` which instructs DollarScript to fix a value completely . More on that later.
 
 ###Blocks
+
 ####Line Block
 DollarScript supports several block types, the first is the 'line block' a line block lies between `{` and `}` and is separated by either newlines or `;` characters.
 
 ```dollar
 
-block := {
+myBlock := {
     "Hello "
     "World"
 }
 
-.: block == "World"
+myBlock <=> "World"
 
-block2 := {1;2}
+myBlock2 := {1;2}
 
-.: block2 == 2
+myBlock2 <=> 2
 
 ```
 
@@ -175,17 +206,17 @@ list := [
     "World"
 ]
 
-.: list == ["Hello ","World"]
+list <=> ["Hello ","World"]
 
 list2 := [1,2]
 
-.: list2 == [1,2]
+list2 <=> [1,2]
 
 ```
 
 ####Map Block
 
-Finally we have the map block, when an map block is evaluated the result is the aggregation  of the parts from top to bottom into a map. The map block starts and finishes with the `{` `}` braces, however each part is seperated by a `,` not a `;` or *newline*
+Finally we have the map block, when an map block is evaluated the result is the aggregation  of the parts from top to bottom into a map. The map block starts and finishes with the `{` `}` braces, however each part is seperated by a `,` not a `;` or *newline* . The default behaviour of a map block is virtually useless, it takes the string value and makes it the key and keeps the original value as the value to be paired with that key.
 
 ```dollar
 
@@ -202,7 +233,7 @@ mapBlock2 <=> {"1":1,"2":2}
 
 ```
 
-Map blocks can be combined with the pair `:` operator to create maps/JSON like this:
+Map blocks are combined with the pair `:` operator to become useful and create maps/JSON like this:
 
 
 ```dollar
@@ -214,9 +245,11 @@ mapBlock := {
 
 @@ mapBlock
 
-.: mapBlock.second == "World"
+mapBlock.second <=> "World"
 
 ```
+
+A map block with one entry that is not a pair is assumed to be a *Line Block*.
 
 The stdout operator `@@` is used to send a value to stdout in it's serialized (JSON) format, so the result of the above would be to output `{"first":"Hello ","second":"World"}` a JSON object created using JSON like syntax. Maps can also be created by joining pairs.
 
@@ -238,7 +271,7 @@ DollarScript's lists are pretty similar to JavaScript arrays. They are defined u
 .: [1,2,3] + 4 == [1,2,3,4];
 .: [1,2,3,4] - 4 == [1,2,3];
 .: [] + 1 == [1] ;
-.: [1] + [1] == [1,[1]];
+.: [1] + [1] == [1,1];
 .: [1] + 1 == [1,1];
 
 [1,2,3][1] <=> 2
@@ -287,12 +320,55 @@ a=1/0
 ```
 
 ##Type System
-###Types
-Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, NUMBER, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the `is` operator:
+###Intro
+Although DollarScript is typeless at compile time, it does support basic runtime typing. At present this includes: STRING, INTEGER,DECIMAL, LIST, MAP, URI, VOID, RANGE, BOOLEAN. The value for a type can be checked using the `is` operator:
 
 ```dollar
-.: "Hello World" is STRING
-.: ["Hello World"] is LIST
+.: "Hello World" is String
+.: ["Hello World"] is List
+```
+
+###Date
+
+Dollar supports a decimal date system where each day is 1.0. This means it's possible to add and remove days from a date using simple arithmetic.
+
+```dollar
+@@ DATE()
+@@ DATE() + 1
+@@ DATE() - 1
+
+.: DATE() + "1.0" is Date
+.: DATE() / "1.0" is Decimal
+```
+
+Components of the date can be accessed using the subscript operators:
+
+```dollar
+@@ DATE().DAY_OF_WEEK
+
+@@ DATE()['DAY_OF_YEAR']=1
+```
+
+Valid values are those from `java.time.temporal.ChronoField`
+
+```
+NANO_OF_SECOND, NANO_OF_DAY, MICRO_OF_SECOND, MICRO_OF_DAY, MILLI_OF_SECOND, MILLI_OF_DAY, SECOND_OF_MINUTE, SECOND_OF_DAY, MINUTE_OF_HOUR, MINUTE_OF_DAY, HOUR_OF_AMPM, CLOCK_HOUR_OF_AMPM, HOUR_OF_DAY, CLOCK_HOUR_OF_DAY, AMPM_OF_DAY, DAY_OF_WEEK, ALIGNED_DAY_OF_WEEK_IN_MONTH, ALIGNED_DAY_OF_WEEK_IN_YEAR, DAY_OF_MONTH, DAY_OF_YEAR, EPOCH_DAY, ALIGNED_WEEK_OF_MONTH, ALIGNED_WEEK_OF_YEAR, MONTH_OF_YEAR, PROLEPTIC_MONTH, YEAR_OF_ERA, YEAR, ERA, INSTANT_SECONDS, OFFSET_SECONDS
+```
+
+As you can see we can do date arithmetic, but thanks to another DollarScript feature anything that can be specified as xxx(i) can also be written i xxx (where i is an integer or decimal and xxx is an identifier). So we can add days hours and seconds to the date.
+
+```dollar
+@@ DATE() + 1 Day
+@@ DATE() + 1 Hour
+@@ DATE() + 1 Sec
+```
+
+Those values are built in, but we can easily define them ourselves.
+
+```dollar
+fortnight := ($1 * 14)
+
+@@ DATE() + 1 fortnight
 ```
 
 ###Constraints
@@ -301,10 +377,10 @@ Although there are no compile type constraints in DollarScript a runtime type sy
 
 ```dollar
 (it < 100) a = 50
-(it > previous || previous is VOID) b = 5
+(it > previous || previous is Void) b = 5
 b=6
 b=7
-( it is STRING) s="String value"
+( it is String) s="String value"
 ```
 
 The special variables `it` - the current value and `previous` - the previous value, will be available for the constraint.
@@ -398,7 +474,7 @@ b <=> 2
 
 ```
 
-So let's start with the `if` operator. The `if` operator is seperate from the `else` operator, it simply evaluates the condition supplied as the first argument. If that value is boolean and true it evaluates the second argument and returns it's value; otherwise it returns boolean false.
+So let's start with the `if` operator. The `if` operator is separate from the `else` operator, it simply evaluates the condition supplied as the first argument. If that value is boolean and true it evaluates the second argument and returns it's value; otherwise it returns boolean false.
 
 The `else` operator is a binary operator which evaluates the left-hand-side (usually the result of an `if` statement), if that has a value of false then the right-hand-side is evaluated and it's result returned, otherwise it returns the left-hand-side.
 
@@ -442,12 +518,12 @@ a <=> 10
 
 DollarScript as previously mentioned is a reactive programming language, that means that changes to one part of your program can automatically affect another. Consider this a 'push' model instead of the usual 'pull' model.
 
-Let's start with the simplest reactive control flow operator, the '->?' or 'causes' operator.
+Let's start with the simplest reactive control flow operator, the '?->' or 'causes' operator.
 
 ```dollar
 a=1; b=1
 
-a ->? (b= a)
+a ?-> (b= a)
 
 &a <=> 1 ; &b <=> 1
 
@@ -564,7 +640,7 @@ marinaVideos = << camel:https://itunes.apple.com/search?term=Marina+And+The+Diam
 @@ marinaVideos.results each { $1.trackViewUrl }
 ```
 
-In this example we've requested a single value (using `<+`) from a uri and assigned the value to `marinaVideos` then we simply iterate over the results  using `each` and each value (passed in to the scope as `$1`) we extract the `trackViewUrl`. The each operator returns a list of the results and that is what is passed to standard out.
+In this example we've requested a single value (using `<<`) from a uri and assigned the value to `marinaVideos` then we simply iterate over the results  using `each` and each value (passed in to the scope as `$1`) we extract the `trackViewUrl`. The each operator returns a list of the results and that is what is passed to standard out.
 
 
 ##Using Java
@@ -617,9 +693,9 @@ The truthy operator converts any value to a boolean by applying the rule that: v
 ```
 
 
-### Pipe Operators
-### Remaining Operators
-## Imports &amp; Modules
+###Pipe Operators
+###Remaining Operators
+##Imports &amp; Modules
 ###Import
 ###Modules
 
@@ -670,7 +746,7 @@ www= (("http:get://127.0.0.1:8111/" + ${channel | "test"}) as URI)
 
 export server := {
            www subscribe {
-            $1.params +> redis
+            $1.params >> redis
             { body :  all redis }
         }
     };
@@ -683,18 +759,50 @@ export state:= [state(www),state(redis)]
 
 ##Builtin Functions
 
-## Concurrency & Threads
-### Concurrent Scope
-The concurrent scope operator `(p)` or `parallel` creates a new scope in which all actions that can be parallel will be, it's partner the serial operator `(s)` or `serial`
-
+##Concurrency & Threads
 
 Notes:
 
 All types are immutable, including collections.
-Cannot reassign a variable from a different thread, so readonly from other threads.ç
+You cannot reassign a variable from a different thread, so they are readonly from other threads.
+
+
+###Parallel &amp; Serial Operators
+The parallel operator `|:|` or `parallel` causes the right hand side expression to be evaluated in parallel, it's partner the serial operator `|..|` or `serial` forces serial evaluation even if the current expression is being evaluated in parallel.
+
+```dollar
+
+testList := [ TIME(), {SLEEP(1 Sec); TIME();}, TIME() ];
+a= |..| testList;
+b= |:| testList;
+//Test different execution orders
+.: a[2] >= a[1]
+.: b[2] < b[1]
+```
+
+As you can see the order of evaluation of lists and maps **but not line blocks** is affected by the use of parallel evaluation.
+
+###Fork
+
+The fork operator `-<` or `fork` will cause an expression to be evaluated in the background and any reference to the forked expression will block until a value is ready.
+
+```dollar
+sleepTime := {@@ "Background Sleeping";SLEEP(4 Sec); @@ "Background Finished Sleeping";TIME()}
+//Any future reference to c will block until c has completed evaluation
+c= fork sleepTime
+SLEEP(1 Sec)
+@@ "Main thread sleeping ..."
+SLEEP(2 Secs)
+@@ "Main thread finished sleeping ..."
+d= TIME()
+.: c > d
+```
+
+In the example the value of c is greater than d because the value of c is evaluated in the background. Note that as soon as you make use of the value of c you block until the value is ready. This is exactly the same as Java's Futures.
 
 
 
-## Advanced Topics
+
+##Advanced Topics
 
 
