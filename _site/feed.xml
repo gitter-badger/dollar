@@ -22,13 +22,15 @@
 </description>
     <link>http://neilellis.github.io//dollar//</link>
     <atom:link href="http://neilellis.github.io//dollar//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 02 Dec 2014 14:49:56 +0000</pubDate>
-    <lastBuildDate>Tue, 02 Dec 2014 14:49:56 +0000</lastBuildDate>
+    <pubDate>Tue, 02 Dec 2014 15:05:20 +0000</pubDate>
+    <lastBuildDate>Tue, 02 Dec 2014 15:05:20 +0000</lastBuildDate>
     <generator>Jekyll v2.5.2</generator>
     
       <item>
         <title>Dollar 0.1.0 - experimental release!</title>
-        <description>&lt;p&gt;The 0.1.0 experimental release of DollarScript is ready to download &lt;em&gt;here&lt;/em&gt;.&lt;/p&gt;
+        <description>&lt;p&gt;The 0.1.0 experimental release of DollarScript is ready to download in &lt;a href=&quot;https://bintray.com/neilellis/dollar/dollar-runtime-osx/0.1.0/view/files&quot;&gt;Bintray&lt;/a&gt;. This release is just to give you a taste of what Dollar is all about and to encourage hackers to feedback on language features.&lt;/p&gt;
+
+&lt;p&gt;Please let me know of bugs, ideas etc. I’m @neilellis on Twitter or email hello@neilellis.me - good luck!&lt;/p&gt;
 
 </description>
         <pubDate>Mon, 01 Dec 2014 16:24:44 +0000</pubDate>
